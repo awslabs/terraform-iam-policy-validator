@@ -87,7 +87,8 @@ _More examples can be found [here](iam_check/doc/)_.
 ## Limitations
 
 1. Does not support Terraform [computed resources](https://www.terraform.io/plugin/sdkv2/schemas/schema-behaviors).
-For example, the tool will report no IAM policy found for the following Terraform template.
+For example, the tool will report no IAM policy found for the following Terraform template. The policy json string is a computed resource. The plan output doesn't contain information of IAM policy document. 
+
 ```
 resource "aws_s3_bucket" "b" {
   bucket = "my-tf-test-bucket"
@@ -116,7 +117,6 @@ resource "aws_iam_policy" "policy" {
   })
 }
 ```
-The policy json string is a computed resource. The plan output doesn't contain information of IAM policy document. 
 
 ## Frequently Asked Questions
 **How to run unit tests**
