@@ -14,14 +14,14 @@ An analyzer needs to exist in the account. To create an analyzer with the accoun
 
 ## Getting Started
 
-### Installation:
+### Installation
 Python 3+ is supported.
 ```
 $ python3 -m pip install pipenv
 $ pipenv install 
 $ pipenv run python iam_check/iam_check.py -h
 ```
-### Credentials 
+### Credentials
 The tool should be run using credentials from the AWS account that you plan to deploy terraform template to. The tool uses boto3 to interact with your AWS account. You can use one of the following methods to specify credentials:
 
 - Environment variables
@@ -53,7 +53,7 @@ The principal used to execute the tool requires the following permissions.
 | access-analyzer:ValidatePolicy | Called for each policy to validate against IAM policy best practices. |
 
 
-### Basic usage:
+### Basic usage
 ```
 pipenv run python iam_check/iam_check.py --config iam_check/config/default.yaml --template-path ./my-template.json --region us-east-1
 ```
