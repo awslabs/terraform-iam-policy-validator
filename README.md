@@ -41,7 +41,6 @@ The principal used to execute the tool requires the following permissions.
             "Sid": "AccessAnalyzerValidatePolicy",
             "Effect": "Allow",
             "Action": [
-                "access-analyzer:ListAnalyzers",
                 "access-analyzer:ValidatePolicy"
             ],
             "Resource": "*"
@@ -51,8 +50,8 @@ The principal used to execute the tool requires the following permissions.
 ```
 | Action Name| Justificiation |
 | ---------- | ------------- |
-| access-analyzer:ListAnalyzers | Detect if there is an existing analyzer in your account.  |
 | access-analyzer:ValidatePolicy | Called for each policy to validate against IAM policy best practices. |
+
 
 ### Basic usage:
 ```
