@@ -1,6 +1,13 @@
 ## IAM Policy Validator for Terraform
 A command line tool that takes a Terraform template, parses the IAM policies, then runs them through IAM Access Analyzer validation checks.
 
+## Table of Contents<!-- omit in toc -->
+
+- [Pre-requisites](#pre-requisites)
+- [Getting Started](#getting-started)
+- [Limitations](#limitations)
+- [Frequently Asked Questions](#frequently-asked-questions)
+
 ## Pre-requisites
 An analyzer needs to exist in the account. To create an analyzer with the account as the zone of trust, see AWS documentation [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-getting-started.html#access-analyzer-enabling).
 
@@ -113,7 +120,7 @@ resource "aws_iam_policy" "policy" {
 ```
 The policy json string is a computed resource. The plan output doesn't contain information of IAM policy document. 
 
-## Code Contribution
+## Frequently Asked Questions
 **How to run unit tests**
 ```
 $ python3 -m pip install pipenv
@@ -122,8 +129,3 @@ $ pipenv shell
 $ cd iam_check
 $ python3 -m pytest
 ```
-## Security
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
-
-## License
-This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) file.
