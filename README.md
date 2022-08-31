@@ -1,8 +1,8 @@
-## Background
+## IAM Policy Validator for Terraform
 A command line tool that takes a Terraform template, parses the IAM policies, then runs them through IAM Access Analyzer validation checks.
 
 ## Pre-requisites
-An analyzer needs to exist in the account. To create an analyzer with the account as the zone of trust, see AWS documentation [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-getting-started.html#access-analyzer-enabling)
+An analyzer needs to exist in the account. To create an analyzer with the account as the zone of trust, see AWS documentation [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-getting-started.html#access-analyzer-enabling).
 
 ## Getting Started
 
@@ -43,7 +43,7 @@ $ cd ../..
 $ pipenv run python iam_check/iam_check.py --config iam_check/config/default.yaml --template-path iam_check/test/tf.json --region us-east-1 --treat-finding-type-as-blocking ERROR # For TF 0.12 and prior, replace tf.json with tf.out
 ```
 
-_More examples can be found [here](iam_check/doc/)_
+_More examples can be found [here](iam_check/doc/)_.
 ### Credentials
 The tool should be run using credentials from the AWS account that you plan to deploy terraform template to. The tool uses boto3 to interact with your AWS account. You can use one of the following methods to specify credentials:
 
@@ -72,7 +72,10 @@ The principal used to execute the tool requires the following permissions.
     ]
 }
 ```
-
+| Action Name| Justificiation |
+| ---------- | ------------- |
+| access-analyzer:ListAnalyzers | Detect if there is an existing analyzer in your account.  |
+| access-analyzer:ValidatePolicy | Called for each policy to validate against IAM policy best practices. |
 
 ## Limitations
 
@@ -110,10 +113,8 @@ resource "aws_iam_policy" "policy" {
 ```
 The policy json string is a computed resource. The plan output doesn't contain information of IAM policy document. 
 
-
 ## Code Contribution
 **How to run unit tests**
-
 ```
 $ python3 -m pip install pipenv
 $ pipenv install --dev
@@ -122,9 +123,7 @@ $ cd iam_check
 $ python3 -m pytest
 ```
 ## Security
-
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
 ## License
-
-This library is licensed under the MIT-0 License. See the LICENSE file.
+This library is licensed under the MIT-0 License. See the [LICENSE](LICENSE) file.
