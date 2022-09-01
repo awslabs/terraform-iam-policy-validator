@@ -1,5 +1,5 @@
 ## IAM Policy Validator for Terraform
-A command line tool that takes a Terraform template, parses the IAM policies, then runs them through IAM Access Analyzer validation checks.
+A command line tool that takes a Terraform template, parses IAM identity-based and resource-based policies, then runs them through [IAM Access Analyzer policy validation checks](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-reference-policy-checks.html).
 
 ## Table of Contents<!-- omit in toc -->
 
