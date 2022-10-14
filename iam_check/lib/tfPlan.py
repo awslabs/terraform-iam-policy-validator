@@ -225,7 +225,7 @@ class TerraformPlan:
             parseString = enum.auto()
             startInterpolation = enum.auto()
             startDirective = enum.auto()
-            parseInterpoli=ation = enum.auto()
+            parseInterpolation = enum.auto()
             parseDirective = enum.auto()
             
         state = strFsm.parseString
