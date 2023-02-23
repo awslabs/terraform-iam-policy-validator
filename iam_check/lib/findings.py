@@ -4,7 +4,7 @@ SPDX-License-Identifier: MIT-0
 """
 import json
 
-from lib import default_to_json
+from . import default_to_json
 
 
 class Finding:

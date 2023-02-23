@@ -1,11 +1,8 @@
 import logging
-from lib import findings
-import boto3
-import json
-import client
-from lib.findings import Findings
-from lib import iamPolicy, tfPlan
-import config
+from ..client import build
+from .findings import Findings
+from . import iamPolicy
+from ..config import validatePolicyResourceType
 
 LOGGER = logging.getLogger('iam-policy-validator-for-terraform')
 
@@ -15,7 +12,7 @@ class Validator:
         self.findings = Findings()
         self.access_analyzer_name = 'AnalyzerCreatedByCfnIAMPolicyValidator'
         self.analyzer_arn = None
-        self.client = client.build('accessanalyzer', region)
+        self.client = build('accessanalyzer', region)
 		# preview builders are used to build the access preview configuration for an individual resource type
 		# a preview builder must be added to add support for access previews for a given resource
 #         self.preview_builders = {
@@ -47,10 +44,10 @@ class Validator:
                 if statement.getPrincipal() != None or statement.getNotPrincipal() != None:
                     policyType='RESOURCE_POLICY'
                     continue
-            if policy_resource_type not in config.validatePolicyResourceType :
+            if policy_resource_type not in validatePolicyResourceType :
                 response = self.client.validate_policy(policyDocument=str(p),policyType=policyType)
             else:
-                policy_resource_type = config.validatePolicyResourceType[policy_resource_type]
+                policy_resource_type = validatePolicyResourceType[policy_resource_type]
                 response = self.client.validate_policy(
                     policyDocument=str(p),
                     policyType=policyType,

@@ -1,32 +1,29 @@
 #!/usr/bin/env python3
 
-#system imports
 import argparse
-import itertools
 import logging
 import json
 import sys
 import traceback
 
-#Module imports
-import config
-import parameters, client, argument_actions
-from parameters import validate_region, validate_finding_types_from_cli, validate_credentials
-from argument_actions import DictionaryArgument, \
-    ParseFindingsToIgnoreFromCLI, ParseAllowExternalPrincipalsFromCLI
-from lib import iamPolicy, iamcheck_AccessAnalyzer, account_config, reporter, tfPlan
-from lib.reporter import default_finding_types_that_are_blocking, Reporter
-#Global Variables
+from .config import loadConfigYaml, iamPolicyAttributes, configure_logging
+from .client import get_account_and_partition, set_profile
+from .parameters import validate_region, validate_finding_types_from_cli, validate_credentials
+from .argument_actions import ParseFindingsToIgnoreFromCLI, ParseAllowExternalPrincipalsFromCLI
+from .lib import iamcheck_AccessAnalyzer, account_config, reporter, tfPlan
+from .lib.reporter import default_finding_types_that_are_blocking, Reporter
+
+# Global Variables
 LOGGER = logging.getLogger('iam-policy-validator-for-terraform')
 
 def main():
     global policy_checks
     opts = cli_parse_opts()
-    
-    account_id, partition = client.get_account_and_partition(opts.region)
+
+    account_id, partition = get_account_and_partition(opts.region)
     account = account_config.AccountConfig(partition, opts.region, account_id)
     validator=iamcheck_AccessAnalyzer.Validator(account.Account, account.Region, account.Partition)
-    
+
     findings = []
     LOGGER.debug(f'Validating terraform plan file: {opts.template_path}')
     with open(opts.template_path, 'r') as fh:
@@ -89,15 +86,15 @@ def cli_parse_opts():
     if args.config is not None:
         for conf in [fileName for arg in args.config for fileName in arg]:
             LOGGER.debug(f'Config file: {conf}')
-            config.loadConfigYaml(conf)
+            loadConfigYaml(conf)
 
     #Make sure there is at least one policy to look for
-    if len(config.iamPolicyAttributes) == 0:
+    if len(iamPolicyAttributes) == 0:
         raise ValueError(f'No IAM policies defined!')
     
-    client.set_profile(args.profile)
+    set_profile(args.profile)
     validate_credentials(args.region)
-    config.configure_logging(args.enable_logging)
+    configure_logging(args.enable_logging)
     return args
 
 
