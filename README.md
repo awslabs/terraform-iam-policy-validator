@@ -17,9 +17,8 @@ An analyzer needs to exist in the account. To create an analyzer with the accoun
 ### Installation
 Python 3+ is supported.
 ```
-$ python3 -m pip install pipenv
-$ pipenv install 
-$ pipenv run python iam_check/iam_check.py -h
+$ pip install tf-policy-validator
+$ tf-policy-validator -h
 ```
 ### Credentials
 The tool should be run using credentials from the AWS account that you plan to deploy terraform template to. The tool uses boto3 to interact with your AWS account. You can use one of the following methods to specify credentials:
@@ -55,7 +54,7 @@ The principal used to execute the tool requires the following permissions.
 
 ### Basic usage
 ```
-pipenv run python iam_check/iam_check.py --config iam_check/config/default.yaml --template-path ./my-template.json --region us-east-1
+tf-policy-validator --config iam_check/config/default.yaml --template-path ./my-template.json --region us-east-1
 ```
 
 ### Avaliable commands
@@ -79,7 +78,7 @@ $ terraform init
 $ terraform plan -out tf.plan ## generate terraform plan file
 $ terraform show -json -no-color tf.plan > tf.json ## convert plan files to machine-readable JSON files. For TF 0.12 and prior, use command `terraform show tf.plan > tf.out`
 $ cd ../..
-$ pipenv run python iam_check/iam_check.py --config iam_check/config/default.yaml --template-path iam_check/test/tf.json --region us-east-1 --treat-finding-type-as-blocking ERROR # For TF 0.12 and prior, replace tf.json with tf.out
+$ tf-policy-validator --config iam_check/config/default.yaml --template-path iam_check/test/tf.json --region us-east-1 --treat-finding-type-as-blocking ERROR # For TF 0.12 and prior, replace tf.json with tf.out
 ```
 
 _More examples can be found [here](iam_check/doc/)_.
