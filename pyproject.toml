@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "terraform-iam-policy-validator"
+version = "0.1.0"
+description = "A command line tool that validates AWS IAM Policies in a Terraform template against AWS IAM best practices"
+authors = ["Policy Validator Maintainers <terraform-policy-validator@amazon.com>"]
+readme = "README.md"
+packages = [{include = "iam_check"}]
+license = "MIT-0"
+keywords = ["amazon", "aws", "aws-samples", "eks", "kubernetes", "upgrade", "iam_check"]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT No Attribution License (MIT-0)",
+]
+include = [
+    "README.md",
+    "LICENSE",
+]
+
+[tool.poetry.scripts]
+tf-iam-validator = "iam_check.iam_check:main"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+boto3 = "^1.26.77"
+pyyaml = "^6.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

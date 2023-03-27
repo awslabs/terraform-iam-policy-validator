@@ -1,9 +1,8 @@
-import config
+from ..config import iamPolicyAttributes, arnServiceMap, awsAccount
 import enum
 import logging
 import json
 import re
-import sys
 
 
 LOGGER = logging.getLogger('iam-policy-validator-for-terraform')
@@ -83,10 +82,10 @@ class TerraformPlan:
         resources = self.listResources()
         for r in resources:
             resourceType = r.split('.')[-2]
-            if resourceType not in config.iamPolicyAttributes:
+            if resourceType not in iamPolicyAttributes:
                 continue
             
-            attributes = config.iamPolicyAttributes[resourceType]
+            attributes = iamPolicyAttributes[resourceType]
 
             if isinstance(attributes, str):
                 attributes = [attributes]
@@ -141,9 +140,9 @@ class TerraformPlan:
         else:
             resource = self.getValue(ref)
 
-        if resource.type not in config.arnServiceMap:
+        if resource.type not in arnServiceMap:
             raise TypeError(f'Add resource type {resource.type} in the configuration arnServiceMap')
-        key = config.arnServiceMap[resource.type]
+        key = arnServiceMap[resource.type]
         terraformKey = key
         default = None
         if '?' in key:
@@ -163,11 +162,11 @@ class TerraformPlan:
         else:
             resource = self.getValue(ref)
 
-        if resource.type not in config.arnServiceMap:
+        if resource.type not in arnServiceMap:
             raise TypeError(f'Add resource type {resource.type} in the configuration arnServiceMap')
-        arn_pattern = config.arnServiceMap[resource.type]
+        arn_pattern = arnServiceMap[resource.type]
         arnComponents = arn_pattern.split(':')
-        arnComponents[4] = config.awsAccount
+        arnComponents[4] = awsAccount
         arn_pattern = ':'.join(arnComponents)
         arn_keys = re.findall('{([^}]+)}', arn_pattern)
         print(arn_keys)

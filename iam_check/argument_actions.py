@@ -4,9 +4,9 @@ SPDX-License-Identifier: MIT-0
 """
 import argparse
 
-from lib.reporter import ResourceOrCodeFindingToIgnore, ResourceAndCodeFindingToIgnore, \
+from .lib.reporter import ResourceOrCodeFindingToIgnore, ResourceAndCodeFindingToIgnore, \
     AllowedExternalArn, AllowedExternalPrincipal
-from tools import regex_patterns
+from .tools import regex_patterns
 
 
 class DictionaryArgument(argparse.Action):

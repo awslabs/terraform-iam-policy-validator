@@ -1,6 +1,5 @@
 import abc
 import logging
-from lib import iamPolicy
 
 logger = logging.getLogger(__name__)
 

@@ -4,8 +4,8 @@ SPDX-License-Identifier: MIT-0
 """
 import json
 
-from lib import default_to_json
-from tools import regex_patterns
+from . import default_to_json
+from ..tools import regex_patterns
 
 default_finding_types_that_are_blocking = ['ERROR', 'SECURITY_WARNING']
 

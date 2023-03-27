@@ -1,11 +1,8 @@
-import glob
-import importlib
 import logging
-import os
-import re
 import yaml
 import sys
-#logging configuration
+
+# logging configuration
 LOGGER = logging.getLogger('iam-policy-validator-for-terraform')
 
 # AWS Account ID to use when unknown
