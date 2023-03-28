@@ -1,4 +1,5 @@
-from ..config import iamPolicyAttributes, arnServiceMap, awsAccount
+#from ..config import iamPolicyAttributes, arnServiceMap, awsAccount
+import iam_check.config as config
 import enum
 import logging
 import json
@@ -82,11 +83,10 @@ class TerraformPlan:
         resources = self.listResources()
         for r in resources:
             resourceType = r.split('.')[-2]
-            if resourceType not in iamPolicyAttributes:
+            if resourceType not in config.iamPolicyAttributes:
                 continue
             
-            attributes = iamPolicyAttributes[resourceType]
-
+            attributes = config.iamPolicyAttributes[resourceType]
             if isinstance(attributes, str):
                 attributes = [attributes]
             for attribute in attributes:
@@ -140,9 +140,9 @@ class TerraformPlan:
         else:
             resource = self.getValue(ref)
 
-        if resource.type not in arnServiceMap:
+        if resource.type not in config.arnServiceMap:
             raise TypeError(f'Add resource type {resource.type} in the configuration arnServiceMap')
-        key = arnServiceMap[resource.type]
+        key = config.arnServiceMap[resource.type]
         terraformKey = key
         default = None
         if '?' in key:
@@ -162,11 +162,11 @@ class TerraformPlan:
         else:
             resource = self.getValue(ref)
 
-        if resource.type not in arnServiceMap:
+        if resource.type not in config.arnServiceMap:
             raise TypeError(f'Add resource type {resource.type} in the configuration arnServiceMap')
-        arn_pattern = arnServiceMap[resource.type]
+        arn_pattern = config.arnServiceMap[resource.type]
         arnComponents = arn_pattern.split(':')
-        arnComponents[4] = awsAccount
+        arnComponents[4] = config.awsAccount
         arn_pattern = ':'.join(arnComponents)
         arn_keys = re.findall('{([^}]+)}', arn_pattern)
         print(arn_keys)

@@ -2,8 +2,7 @@ import logging
 from ..client import build
 from .findings import Findings
 from . import iamPolicy
-from ..config import validatePolicyResourceType
-
+import iam_check.config as config
 LOGGER = logging.getLogger('iam-policy-validator-for-terraform')
 
 # class AccessAnalyzer(iamCheck.IamCheck):
@@ -44,10 +43,10 @@ class Validator:
                 if statement.getPrincipal() != None or statement.getNotPrincipal() != None:
                     policyType='RESOURCE_POLICY'
                     continue
-            if policy_resource_type not in validatePolicyResourceType :
+            if policy_resource_type not in config.validatePolicyResourceType :
                 response = self.client.validate_policy(policyDocument=str(p),policyType=policyType)
             else:
-                policy_resource_type = validatePolicyResourceType[policy_resource_type]
+                policy_resource_type = config.validatePolicyResourceType[policy_resource_type]
                 response = self.client.validate_policy(
                     policyDocument=str(p),
                     policyType=policyType,
