@@ -6,7 +6,8 @@ import json
 import sys
 import traceback
 
-from .config import loadConfigYaml, iamPolicyAttributes, configure_logging
+#from .config import loadConfigYaml, iamPolicyAttributes, configure_logging
+import iam_check.config as config
 from .client import get_account_and_partition, set_profile
 from .parameters import validate_region, validate_finding_types_from_cli, validate_credentials
 from .argument_actions import ParseFindingsToIgnoreFromCLI, ParseAllowExternalPrincipalsFromCLI
@@ -86,15 +87,15 @@ def cli_parse_opts():
     if args.config is not None:
         for conf in [fileName for arg in args.config for fileName in arg]:
             LOGGER.debug(f'Config file: {conf}')
-            loadConfigYaml(conf)
+            config.loadConfigYaml(conf)
 
     #Make sure there is at least one policy to look for
-    if len(iamPolicyAttributes) == 0:
+    if len(config.iamPolicyAttributes) == 0:
         raise ValueError(f'No IAM policies defined!')
     
     set_profile(args.profile)
     validate_credentials(args.region)
-    configure_logging(args.enable_logging)
+    config.configure_logging(args.enable_logging)
     return args
 
 
