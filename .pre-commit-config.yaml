@@ -1,0 +1,40 @@
+---
+
+fail_fast: false
+minimum_pre_commit_version: "3.0.0"
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: f71fa2c1f9cf5cb705f73dffe4b21f7c61470ba9  # frozen: v4.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-executables-have-shebangs
+      - id: check-json
+      - id: check-symlinks
+      - id: check-vcs-permalinks
+      - id: check-xml
+      - id: check-yaml
+      - id: mixed-line-ending
+      - id: trailing-whitespace
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: ca4faf2f82a7c68a088100f8ba2b8e56f9bdcfe3  # frozen: 1.7.5
+    hooks:
+      - id: bandit
+        description: 'Bandit is a tool for finding common security issues in Python code'
+        additional_dependencies: [ "bandit[toml]" ]
+        args: ["-c", "pyproject.toml"]
+
+  - repo: https://github.com/psf/black
+    rev: bf7a16254ec96b084a6caf3d435ec18f0f245cc7  # frozen: 23.3.0
+    hooks:
+      - id: black
+        language_version: python3.10
+
+  - repo: https://github.com/pycqa/isort
+    rev: dbf82f2dd09ae41d9355bcd7ab69187a19e6bf2f  # frozen: 5.12.0
+    hooks:
+      - id: isort
+        name: isort
