@@ -4,8 +4,9 @@ SPDX-License-Identifier: MIT-0
 """
 import argparse
 
-from .lib.reporter import ResourceOrCodeFindingToIgnore, ResourceAndCodeFindingToIgnore, \
-    AllowedExternalArn, AllowedExternalPrincipal
+from .lib.reporter import (AllowedExternalArn, AllowedExternalPrincipal,
+                           ResourceAndCodeFindingToIgnore,
+                           ResourceOrCodeFindingToIgnore)
 from .tools import regex_patterns
 
 
@@ -28,8 +29,8 @@ class ParseFindingsToIgnoreFromCLI(argparse.Action):
     a combination of both in the form MyResource.FindingA
     """
 
-    def __call__(self,  _, namespace, values, option_string=None):
-        values = values.split(',')
+    def __call__(self, _, namespace, values, option_string=None):
+        values = values.split(",")
 
         findings_to_ignore = parse_findings_to_ignore(values)
 
@@ -47,7 +48,9 @@ def parse_findings_to_ignore(values_as_list):
         if "." in value:
             resource_and_code = value.split(".", 1)
             # a split must have at least two members of the array, so no need to validate
-            finding_to_ignore = ResourceAndCodeFindingToIgnore(resource_and_code[0], resource_and_code[1])
+            finding_to_ignore = ResourceAndCodeFindingToIgnore(
+                resource_and_code[0], resource_and_code[1]
+            )
         else:
             finding_to_ignore = ResourceOrCodeFindingToIgnore(value)
 
@@ -63,7 +66,7 @@ class ParseAllowExternalPrincipalsFromCLI(argparse.Action):
     """
 
     def __call__(self, _, namespace, values, option_string=None):
-        values = values.split(',')
+        values = values.split(",")
 
         allowed_external_principals = parse_allow_external_principals(values)
 

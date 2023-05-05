@@ -2,7 +2,8 @@ import json
 import logging
 from typing import Optional, Union
 
-LOGGER = logging.getLogger('iam-policy-validator-for-terraform')
+LOGGER = logging.getLogger("iam-policy-validator-for-terraform")
+
 
 class Policy:
     def __init__(self, **kwargs):
@@ -10,14 +11,14 @@ class Policy:
         self._id = ""
         self._statement = []
 
-        accepted =['Version', 'Id', 'Statement', 'file', 'json']
+        accepted = ["Version", "Id", "Statement", "file", "json"]
 
         for key, value in kwargs.items():
-            if key == 'Version':
+            if key == "Version":
                 self.setVersion(value)
-            elif key == 'Id':
+            elif key == "Id":
                 self.setId(value)
-            elif key =='Statement':
+            elif key == "Statement":
                 if isinstance(value, Statement):
                     self.addStatement(value)
                 elif isinstance(value, dict):
@@ -29,23 +30,27 @@ class Policy:
                         else:
                             self.addStatement(Statement(**statement))
                 else:
-                    raise ValueError(f'Statements expects list or dictionary')
+                    raise ValueError(f"Statements expects list or dictionary")
 
-            elif key == 'file':
+            elif key == "file":
                 if len(kwargs) != 1:
-                    raise ValueError('Invalid parameter: file can not be used with other arguments')
-                with open(value, 'r') as fh:
+                    raise ValueError(
+                        "Invalid parameter: file can not be used with other arguments"
+                    )
+                with open(value, "r") as fh:
                     data = json.load(fh)
                 self.__init__(**data)
 
-            elif key == 'json':
+            elif key == "json":
                 if len(kwargs) != 1:
-                    raise ValueError('Invalid parameter: file can not be used with other arguments')
+                    raise ValueError(
+                        "Invalid parameter: file can not be used with other arguments"
+                    )
                 data = json.loads(value)
                 self.__init__(**data)
 
             else:
-                raise ValueError(f'Invalid parameter: {key} not a valid parameter')
+                raise ValueError(f"Invalid parameter: {key} not a valid parameter")
 
     def __eq__(self, o) -> bool:
         """Overload = operator to test if two policies are the same"""
@@ -64,19 +69,19 @@ class Policy:
         """return a JSON representative of the iam policy"""
         obj = {}
         if self._version != "":
-            obj['Version'] = self._version
-        
+            obj["Version"] = self._version
+
         if self._id != "":
-            obj['Id'] = self._id
+            obj["Id"] = self._id
 
         if len(self._statement) == 1:
             t = json.loads(str(self._statement[0]))
-            obj['Statement'] = t
+            obj["Statement"] = t
         else:
-            obj['Statement'] = []
+            obj["Statement"] = []
             for statement in self._statement:
                 t = json.loads(str(statement))
-                obj['Statement'].append(t)
+                obj["Statement"].append(t)
         return json.dumps(obj, indent=4)
 
     def setId(self, id: str) -> None:
@@ -86,7 +91,7 @@ class Policy:
         valid = ["2012-10-17", "2008-10-17"]
 
         if version not in valid:
-            raise ValueError(f'Invalid IAM policy version: {version}')
+            raise ValueError(f"Invalid IAM policy version: {version}")
 
         self._version = version
 
@@ -106,8 +111,9 @@ class Policy:
     def getStatement(self) -> str:
         return self._statement
 
+
 class Statement:
-    def __init__(self, json: str= None, **kwargs):
+    def __init__(self, json: str = None, **kwargs):
         self._sid = None
         self._principal = None
         self._effect = ""
@@ -124,37 +130,37 @@ class Statement:
             self.__init__(**data)
             return
 
-        if 'Action' in kwargs and 'NotAction' in kwargs:
-            raise ValueError('Parameter: Can not use Action with NotAction')
-        if 'Principal' in kwargs and 'NotPrincipal' in kwargs:
-            raise ValueError('Parameter: Can not use Action with NotPrincipal')
-        if 'Resource' in kwargs and 'NotResource' in kwargs:
-            raise ValueError('Parameter: Can not use Action with NotResource')
+        if "Action" in kwargs and "NotAction" in kwargs:
+            raise ValueError("Parameter: Can not use Action with NotAction")
+        if "Principal" in kwargs and "NotPrincipal" in kwargs:
+            raise ValueError("Parameter: Can not use Action with NotPrincipal")
+        if "Resource" in kwargs and "NotResource" in kwargs:
+            raise ValueError("Parameter: Can not use Action with NotResource")
 
         for arg, value in kwargs.items():
-            if arg == 'Sid':
+            if arg == "Sid":
                 self.setSid(value)
-            elif arg == 'Effect':
+            elif arg == "Effect":
                 self.setEffect(value)
-            elif arg == 'Action' or arg == 'NotAction':
+            elif arg == "Action" or arg == "NotAction":
                 if isinstance(value, list):
                     for action in value:
-                        self.addAction(action, arg == 'NotAction')
+                        self.addAction(action, arg == "NotAction")
                 else:
-                    self.addAction(value, arg == 'NotAction')
-            elif arg == 'Principal' or arg == 'NotPrincipal' :
-                self.setPrincipal(value, arg == 'NotPrincipal')
-            elif arg == 'Resource' or arg == 'NotResource':
+                    self.addAction(value, arg == "NotAction")
+            elif arg == "Principal" or arg == "NotPrincipal":
+                self.setPrincipal(value, arg == "NotPrincipal")
+            elif arg == "Resource" or arg == "NotResource":
                 if isinstance(value, list):
                     for resource in value:
-                        self.addResource(resource, arg == 'NotResource')
+                        self.addResource(resource, arg == "NotResource")
                 else:
-                    self.addResource(value, arg == 'NotResource')
-            elif arg == 'Condition':
+                    self.addResource(value, arg == "NotResource")
+            elif arg == "Condition":
                 self._condition = value
             else:
-                raise ValueError(f'Invalid parameter: {arg} not a valid parameter')
-            
+                raise ValueError(f"Invalid parameter: {arg} not a valid parameter")
+
     def __eq__(self, o) -> bool:
         if self._notAction != o._notAction:
             return False
@@ -170,55 +176,54 @@ class Statement:
             return False
         if len(self._resource) != len(o._resource):
             return False
-        
+
         me = sorted(self._resource)
         you = sorted(o._resource)
         if me != you:
             return False
-        
+
         me = sorted(self._action)
         you = sorted(o._action)
         if me != you:
-            return False      
+            return False
 
-        me = json.dumps(self._principal, sort_keys = True)
-        me = json.dumps(o._principal, sort_keys = True)
+        me = json.dumps(self._principal, sort_keys=True)
+        me = json.dumps(o._principal, sort_keys=True)
         if me != you:
-            return False      
+            return False
 
-        me = json.dumps(self._condition, sort_keys = True)
-        me = json.dumps(o._condition, sort_keys = True)
+        me = json.dumps(self._condition, sort_keys=True)
+        me = json.dumps(o._condition, sort_keys=True)
         if me != you:
-            return False      
+            return False
 
         return True
 
     def __str__(self) -> str:
         obj = {}
         if self._sid is not None:
-            obj['Sid'] = self._sid
+            obj["Sid"] = self._sid
         if self._principal is not None:
-            key = 'NotPrincipal' if self._notPrincipal else 'Principal'
+            key = "NotPrincipal" if self._notPrincipal else "Principal"
             obj[key] = self._principal
         if self._effect != "":
-            obj['Effect'] = self._effect
+            obj["Effect"] = self._effect
         if self._condition is not None:
-            obj['Condition'] = self._condition
-        
-        key = 'NotAction' if self._notAction else 'Action'
+            obj["Condition"] = self._condition
+
+        key = "NotAction" if self._notAction else "Action"
         if len(self._action) == 1:
             obj[key] = self._action[0]
         else:
             obj[key] = self._action
 
-        key = 'NotResource' if self._notResource else 'Resource'
+        key = "NotResource" if self._notResource else "Resource"
         if len(self._resource) == 1:
             obj[key] = self._resource[0]
         else:
             obj[key] = self._resource
-        
-        return json.dumps(obj, indent=4, default=str)
 
+        return json.dumps(obj, indent=4, default=str)
 
     def setSid(self, sid: Optional[str] = None):
         self._sid = sid
@@ -226,24 +231,26 @@ class Statement:
     def setEffect(self, effect: Optional[str] = None):
         valid = [None, "Allow", "Deny"]
         if effect not in valid:
-            raise ValueError(f'Invalid effect: {effect}')
+            raise ValueError(f"Invalid effect: {effect}")
         self._effect = effect
-    
-    def setPrincipal(self, principal: Union[str, dict, None]= None, NotPrincipal = False):
+
+    def setPrincipal(
+        self, principal: Union[str, dict, None] = None, NotPrincipal=False
+    ):
         if self._principal is not None and self.NotPrincipal != NotPrincipal:
-            raise ValueError(f'Can not use Principal with NotPrincipal')
+            raise ValueError(f"Can not use Principal with NotPrincipal")
         self._notPrincipal = NotPrincipal
         self._principal = principal
 
-    def addAction(self, action: str, notAction = False):
+    def addAction(self, action: str, notAction=False):
         if len(self._action) > 0 and self._notAction != notAction:
-            raise ValueError(f'Can not use Action with NotAction')
+            raise ValueError(f"Can not use Action with NotAction")
         self._notAction = notAction
         self._action.append(action)
 
-    def addResource(self, resource: str, notResource = False):
+    def addResource(self, resource: str, notResource=False):
         if len(self._resource) > 0 and self._notResource != notResource:
-            raise ValueError(f'Can not use Resource with NotResource')
+            raise ValueError(f"Can not use Resource with NotResource")
         self._notResource = notResource
         if resource not in self._resource:
             self._resource.append(resource)
@@ -253,10 +260,10 @@ class Statement:
 
     def deleteResource(self, resource: str):
         self._resource = [r for r in self._resource if r != resource]
-    
+
     def getSid(self):
         return self._sid
-    
+
     def getEffect(self):
         return self._effect
 
@@ -264,7 +271,7 @@ class Statement:
         if self._notAction:
             return None
         return self._action
-    
+
     def getNotAction(self):
         if self._notAction:
             return self._action
@@ -275,7 +282,7 @@ class Statement:
             return None
         return self._principal
 
-    def listPrincipal(self, notPrincipal = False):
+    def listPrincipal(self, notPrincipal=False):
         if notPrincipal != self._notPrincipal:
             return [None]
         principal = self._principal
@@ -287,27 +294,27 @@ class Statement:
             return ["*"]
 
         principals = []
-        for svc,ids in principal.items():
-            if isinstance(ids,str):
-                principals.append(f'{svc}:{ids}')
+        for svc, ids in principal.items():
+            if isinstance(ids, str):
+                principals.append(f"{svc}:{ids}")
                 continue
             for id in ids:
-                principals.append(f'{svc}:{ids}')
+                principals.append(f"{svc}:{ids}")
         return principals
 
     def getNotPrincipal(self):
         if self._notPrincipal:
             return self._principal
         return None
-    
+
     def getResource(self):
         if self._notResource:
             return None
-        return self._resource 
+        return self._resource
 
     def getNotResource(self):
         if self._notResource:
-            return self._resource 
+            return self._resource
         return None
 
     def getCondition(self):
