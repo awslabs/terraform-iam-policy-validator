@@ -20,7 +20,9 @@ LOGGER = logging.getLogger('iam-policy-validator-for-terraform')
 def main():
     global policy_checks
     opts = cli_parse_opts()
+    validate_from_cli(opts)
 
+def validate_from_cli(opts):
     account_id, partition = get_account_and_partition(opts.region)
     account = account_config.AccountConfig(partition, opts.region, account_id)
     validator=iamcheck_AccessAnalyzer.Validator(account.Account, account.Region, account.Partition)
@@ -52,35 +54,44 @@ def main():
 
 
 def cli_parse_opts():
-    parser = argparse.ArgumentParser()
+    parent_parser = argparse.ArgumentParser(add_help=False)
 
-    parser.add_argument('--template-path', metavar="TEMPLATE_PATH", dest="template_path", required=True,
+    parent_parser.add_argument('--template-path', metavar="TEMPLATE_PATH", dest="template_path", required=True,
                         help='Terraform plan file (JSON)')
-    parser.add_argument('--region', dest="region", required=True, type=validate_region,
+    parent_parser.add_argument('--region', dest="region", required=True, type=validate_region,
                         help="The region the resources will be deployed to.")
-    parser.add_argument('--profile', help='The named profile to use for AWS API calls.')
-    parser.add_argument("--config", nargs="+", help='Config file for running this script', action='append')
-    parser.add_argument('--enable-logging', help='Enable detailed logging.', default=False, action='store_true')
-    parser.add_argument('--ignore-finding', dest="ignore_finding", metavar='FINDING_CODE,RESOURCE_NAME,RESOURCE_NAME.FINDING_CODE',
+    parent_parser.add_argument('--profile', help='The named profile to use for AWS API calls.')
+    parent_parser.add_argument("--config", nargs="+", help='Config file for running this script', action='append')
+    parent_parser.add_argument('--enable-logging', help='Enable detailed logging.', default=False, action='store_true')
+    
+    parser = argparse.ArgumentParser(description='Parses IAM identity-based and resource-based policies from Terraform templates.')
+
+    subparsers = parser.add_subparsers(dest='{validate}')
+    subparsers.required = True
+    validate_parser = subparsers.add_parser('validate', help='Parses IAM identity-based and resource-based policies from Terraform templates '
+                                                           'and runs them through IAM Access Analyzer for validation.  Returns the findings from '
+                                                           'validation in JSON format.', parents=[parent_parser])
+    validate_parser.add_argument('--ignore-finding', dest="ignore_finding", metavar='FINDING_CODE,RESOURCE_NAME,RESOURCE_NAME.FINDING_CODE',
                                  help='Allow validation failures to be ignored.\n'
                              'Specify as a comma separated list of findings to be ignored. Can be individual '
                              'finding codes (e.g. "PASS_ROLE_WITH_STAR_IN_RESOURCE"), a specific resource name '
                              '(e.g. "MyResource"), or a combination of both separated by a period.'
                              '(e.g. "MyResource.PASS_ROLE_WITH_STAR_IN_RESOURCE").',
                                  action=ParseFindingsToIgnoreFromCLI)
-    parser.add_argument('--treat-finding-type-as-blocking', dest="treat_as_blocking", metavar="ERROR,SECURITY_WARNING",
+    validate_parser.add_argument('--treat-finding-type-as-blocking', dest="treat_as_blocking", metavar="ERROR,SECURITY_WARNING",
                                  help='Specify which finding types should be treated as blocking. Other finding types are treated '
                                      'as non-blocking. Defaults to "ERROR" and "SECURITY_WARNING". Specify as a comma separated '
                                      'list of finding types that should be blocking.  Possible values are "ERROR", '
                                      '"SECURITY_WARNING", "SUGGESTION", and "WARNING".  Pass "NONE" to ignore all errors.',
                                  default=default_finding_types_that_are_blocking, type=validate_finding_types_from_cli)
 
-    parser.add_argument('--allow-external-principals', dest='allowed_external_principals', metavar="ACCOUNT,ARN",
+    validate_parser.add_argument('--allow-external-principals', dest='allowed_external_principals', metavar="ACCOUNT,ARN",
                                  help='A comma separated list of external principals that should be ignored.  Specify as '
                                      'a comma separated list of a 12 digit AWS account ID, a federated web identity '
                                      'user, a federated SAML user, or an ARN. Specify "*" to allow anonymous access. '
                                      '(e.g. 123456789123,arn:aws:iam::111111111111:role/MyOtherRole,graph.facebook.com)',
                                  action=ParseAllowExternalPrincipalsFromCLI)
+
     args = parser.parse_args()
 
     #load yaml config
