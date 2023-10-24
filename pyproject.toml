@@ -24,14 +24,32 @@ include = [
 [tool.poetry.scripts]
 tf-policy-validator = "iam_check.iam_check:main"
 
+[tool.bandit]
+exclude_dirs = ["iam_check/test"]
+
+# Styling and linting Configurations
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.black]
+line-length = 120
+target-version = ["py310"]
+
 [tool.poetry.dependencies]
 python = "^3.8"
 boto3 = "^1.26.77"
 pyyaml = "^6.0"
 
+[tool.poetry.test.group.test.dependencies]
+pytest = "^7.2.1"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.2.1"
+isort = {extras = ["toml"], version = "^5.12.0"}
+black = "^22.12.0"
+
+[tool.poetry.group.security.dependencies]
+bandit = {extras = ["toml"], version = "^1.7.5"}
 
 [build-system]
 requires = ["poetry-core"]
