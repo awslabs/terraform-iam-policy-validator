@@ -20,7 +20,6 @@ class Reporter:
 		self.nonblocking_findings = []
 		self.findings_to_ignore = findings_to_ignore
 		self.finding_types_that_are_blocking = finding_types_that_are_blocking
-		self.finding_codes_that_are_blocking = finding_codes_that_are_blocking
 		self.allowed_external_principals = allowed_external_principals
 
 	def build_report_from(self, findings):
