@@ -30,6 +30,6 @@ class TestTerraformResource:
 
         x.setValue('big', 'shot')
         if x.getValue('big') != 'shot':
-            error.append('Failed setting a value with setqVaule()')
+            err.append('Failed setting a value with setqVaule()')
         assert( err == [])
 

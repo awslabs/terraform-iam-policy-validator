@@ -1,0 +1,22 @@
+{
+    "BlockingFindings": [
+        {
+            "findingType": "SECURITY_WARNING",
+            "code": "policy-analysis-CheckNoNewAccess",
+            "message": "The modified permissions grant new access compared to your existing policy.",
+            "resourceName": "fakeBucket",
+            "policyName": "aws_s3_bucket_policy.allow_access_from_another_account",
+            "details": {
+                "result": "FAIL",
+                "message": "The modified permissions grant new access compared to your existing policy.",
+                "reasons": [
+                    {
+                        "description": "New access in the statement with index: 0.",
+                        "statementIndex": 0
+                    }
+                ]
+            }
+        }
+    ],
+    "NonBlockingFindings": []
+}

@@ -38,6 +38,7 @@ class TerraformPlan:
         self.variables = {}
         self.resource_changes = []
         self.output_changes = []
+        self.ref_map = {}
 
         for arg, value in kwargs.items():
             if arg == 'format_version':
@@ -121,6 +122,7 @@ class TerraformPlan:
                     else:
                         for index, block in enumerate(data):
                             ref = f'{block_ref}.{index}.{key}'
+                            self.ref_map[f'{block_ref}.{index}'] = r
                             if "policy" in block: 
                                 policy = block[key]
                                 if policy is None or policy == "":
@@ -138,7 +140,11 @@ class TerraformPlan:
             resource =  ref
             ref = resource.address
         else:
-            resource = self.getValue(ref)
+            mapped_ref = self.ref_map.get(ref)
+            if mapped_ref is not None:
+                resource = self.getValue(mapped_ref)
+            else:
+                resource = self.getValue(ref)
 
         if resource.type not in config.arnServiceMap:
             raise TypeError(f'Add resource type {resource.type} in the configuration arnServiceMap')

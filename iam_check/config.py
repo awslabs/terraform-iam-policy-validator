@@ -36,7 +36,7 @@ def configure_logging(enable_logging):
     LOGGER.addHandler(console_handler)
     if not enable_logging:
         LOGGER.disabled = True
-def loadConfigYaml(file):
+def load_config_yaml(file, exclude_resource_type = []):
     global arnServiceMap
     global iamPolicyAttributes
     global validatePolicyResourceType
@@ -50,6 +50,8 @@ def loadConfigYaml(file):
         
     if 'iamPolicyAttributes' in data:
         iamPolicyAttributes = data['iamPolicyAttributes']
+        for exclude_type in exclude_resource_type:
+            del iamPolicyAttributes[exclude_type]
         
     if 'validatePolicyResourceType' in data:
         validatePolicyResourceType = data['validatePolicyResourceType']

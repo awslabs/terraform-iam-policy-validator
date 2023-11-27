@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Principal": {
+        "AWS": "123456789012"
+      },
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject"
+      ]
+    }
+  ]
+}
