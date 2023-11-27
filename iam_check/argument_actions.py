@@ -87,3 +87,11 @@ def parse_allow_external_principals(values_as_list):
         allowed_external_principals.append(allowed_external_principal)
 
     return allowed_external_principals
+
+class ParseListFromCLI(argparse.Action):
+    def __call__(self, _, namespace, values, option_string=None):
+        values = values.split(',')
+        if values is None:
+            setattr(namespace, self.dest, None)
+        values = [value.strip() for value in values]
+        setattr(namespace, self.dest, values)

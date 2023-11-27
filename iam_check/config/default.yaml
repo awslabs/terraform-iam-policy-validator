@@ -3,7 +3,10 @@
 # {<key>?<default>}
 arnServiceMap:
   aws_iam_policy: name?fakename
+  aws_iam_user_policy: name?fakename
   aws_iam_role: name?fakename
+  aws_iam_role_policy: name
+  aws_iam_group_policy: name
   aws_api_gateway_rest_api_policy: rest_api_id?fakeRestApiId
   aws_backup_vault_policy: backup_vault_name?fakeBackupVaultName
   aws_cloudwatch_event_bus_policy: event_bus_name?fakeEventBusName
