@@ -342,7 +342,7 @@ class TerraformModule:
                 for child in value:
                     self.child_modules.append(TerraformModule(**child))
             else:
-                raise ValueError(f'Unkown parameter: {arg}')
+                raise ValueError(f'Unknown parameter: {arg}')
             
     def __eq__(self, o: object) -> bool:
         if self.address != o.address:
@@ -393,8 +393,8 @@ class TerraformModule:
         for m in self.child_modules:
             if m.address == key:
                 return key
-            if key.startswith(f'{r.address}.'):
-                return r.getValue(key)
+            if key.startswith(f'{m.address}.'):
+                return m.getValue(key)
         raise KeyError(f'Invalid terraform address: {key}')
 
     def listResources(self):
