@@ -66,6 +66,8 @@ class Reporter:
 
 		if finding.findingType.upper() in self.finding_types_that_are_blocking:
 			self.blocking_findings.append(finding)
+		elif '.'.join([finding.findingType.upper(), finding.code.upper()]) in self.finding_types_that_are_blocking:
+			self.blocking_findings.append(finding)
 		else:
 			self.nonblocking_findings.append(finding)
 
