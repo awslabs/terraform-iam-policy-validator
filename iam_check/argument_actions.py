@@ -35,6 +35,37 @@ class ParseFindingsToIgnoreFromCLI(argparse.Action):
 
         setattr(namespace, self.dest, findings_to_ignore)
 
+class ParseCodesToBlockFromCLI(argparse.Action):
+    """
+    Parses comma delimited list of codes to block on.  This is either a resource name or a finding code name, or
+    a combination of both in the form MyResource.FindingA
+    """
+
+    def __call__(self,  _, namespace, values, option_string=None):
+        values = values.split(',')
+
+        codes_to_block = parse_codes_to_block(values)
+
+        setattr(namespace, self.dest, codes_to_block)
+
+def parse_codes_to_block(values_as_list):
+    if values_as_list is None:
+        return values_as_list
+
+    values_as_list = [value.strip() for value in values_as_list]
+
+    codes_to_block = []
+    for value in values_as_list:
+        if "." in value:
+            resource_and_code = value.split(".", 1)
+            # a split must have at least two members of the array, so no need to validate
+            finding_to_ignore = ResourceAndCodeFindingToBlock(resource_and_code[0], resource_and_code[1])
+        else:
+            finding_to_ignore = ResourceOrCodeFindingToBlock(value)
+
+        codes_to_block.append(finding_to_ignore)
+
+    return codes_to_block
 
 def parse_findings_to_ignore(values_as_list):
     if values_as_list is None:

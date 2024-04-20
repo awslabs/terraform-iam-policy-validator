@@ -1,0 +1,22 @@
+{
+    "BlockingFindings": [
+        {
+            "findingType": "SUGGESTION",
+            "code": "ALLOW_WITH_UNSUPPORTED_TAG_CONDITION_KEY_FOR_SERVICE",
+            "message": "Using the effect Allow with the condition key aws:ResourceTag/environment and actions for services with the following prefixes does not affect the policy: ec2. The actions for the listed service are not allowed by this statement. We recommend that you move these actions to a different statement without this condition key.",
+            "resourceName": "test_stream",
+            "policyName": "aws_kinesis_stream.test_stream",
+            "details": {
+                "result": "FAIL",
+                "message": "Using the effect Allow with the condition key aws:ResourceTag/environment and actions for services with the following prefixes does not affect the policy: ec2. The actions for the listed service are not allowed by this statement. We recommend that you move these actions to a different statement without this condition key.",
+                "reasons": [
+                    {
+                        "description": "New access in the statement with index: 0.",
+                        "statementIndex": 0
+                    }
+                ]
+            }
+        }
+    ],
+    "NonBlockingFindings": []
+}

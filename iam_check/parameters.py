@@ -34,6 +34,16 @@ def validate_finding_types_from_cli(value):
 
 	return finding_types
 
+def validate_finding_codes_from_cli(value):
+	"""
+	Validate that the finding codes provided are valid finding codes.
+	"""
+
+	finding_codes = value.split(',')
+	finding_codes = validate_finding_codes(finding_codes)
+
+	return finding_codes
+
 
 def validate_finding_types(finding_types):
 	if finding_types is None:
@@ -47,3 +57,16 @@ def validate_finding_types(finding_types):
 			raise ArgumentTypeError(f"Invalid finding type: {finding_type}.")
 
 	return finding_types
+
+def validate_finding_codes(finding_codes):
+	if finding_codes is None:
+		return finding_codes
+
+	finding_codes = [finding_code.strip() for finding_code in finding_codes]
+	finding_codes = [finding_code.upper() for finding_code in finding_codes]
+
+	# for finding_code in finding_codes:
+	# 	if finding_code not in ['ERROR', 'SECURITY_WARNING', 'SUGGESTION', 'WARNING', 'NONE']:
+	# 		raise ArgumentTypeError(f"Invalid finding code: {finding_code}.")
+
+	return finding_codes

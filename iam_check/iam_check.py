@@ -98,6 +98,11 @@ def cli_parse_opts():
                                      'list of finding types that should be blocking.  Possible values are "ERROR", '
                                      '"SECURITY_WARNING", "SUGGESTION", and "WARNING".  Pass "NONE" to ignore all errors.',
                                  default=default_finding_types_that_are_blocking, type=validate_finding_types_from_cli)
+    validate_parser.add_argument('--treat-finding-code-as-blocking', dest="treat_as_blocking", metavar="ERROR,SECURITY_WARNING",
+                                 help='Specify which finding codes should be treated as blocking. Other finding codes are treated '
+                                     'as non-blocking. Not set by default. Specify as a comma separated '
+                                     'list of finding codes that should be blocking.',
+                                 default=default_finding_codes_that_are_blocking, type=validate_finding_codes_from_cli)
 
     validate_parser.add_argument('--allow-external-principals', dest='allowed_external_principals', metavar="ACCOUNT,ARN",
                                  help='A comma separated list of external principals that should be ignored.  Specify as '

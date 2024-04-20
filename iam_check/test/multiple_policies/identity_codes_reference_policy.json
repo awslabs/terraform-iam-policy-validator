@@ -1,0 +1,30 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kinesis:Get*",
+        "kinesis:DescribeStreamSummary"
+      ],
+      "Resource": [
+        "arn:aws:kinesis:us-east-1:111122223333:stream/stream1"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kinesis:ListStreams",
+        "ec2:DescribeVolumes"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/environment": "production"
+        }
+      }
+    }
+  ]
+}
