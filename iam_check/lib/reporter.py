@@ -8,6 +8,7 @@ from . import default_to_json
 from iam_check.tools import regex_patterns
 
 default_finding_types_that_are_blocking = ['ERROR', 'SECURITY_WARNING']
+default_finding_codes_that_are_blocking = []
 
 
 class Reporter:
@@ -15,11 +16,12 @@ class Reporter:
 	Determines what findings should be reported to the end user based on parameters provided when starting validation.
 	"""
 
-	def __init__(self, findings_to_ignore, finding_types_that_are_blocking, allowed_external_principals):
+	def __init__(self, findings_to_ignore, finding_types_that_are_blocking, allowed_external_principals, finding_codes_that_are_blocking):
 		self.blocking_findings = []
 		self.nonblocking_findings = []
 		self.findings_to_ignore = findings_to_ignore
 		self.finding_types_that_are_blocking = finding_types_that_are_blocking
+		self.finding_codes_that_are_blocking = finding_codes_that_are_blocking
 		self.allowed_external_principals = allowed_external_principals
 
 	def build_report_from(self, findings):
@@ -66,7 +68,7 @@ class Reporter:
 
 		if finding.findingType.upper() in self.finding_types_that_are_blocking:
 			self.blocking_findings.append(finding)
-		elif '.'.join([finding.findingType.upper(), finding.code.upper()]) in self.finding_types_that_are_blocking:
+		elif finding.code.upper() in self.finding_codes_that_are_blocking:
 			self.blocking_findings.append(finding)
 		else:
 			self.nonblocking_findings.append(finding)
@@ -82,6 +84,20 @@ class ResourceOrCodeFindingToIgnore:
 
 	def __eq__(self, other):
 		if not isinstance(other, ResourceOrCodeFindingToIgnore):
+			return False
+
+		return self.value == other.value
+
+class ResourceOrCodeFindingToBlock:
+	def __init__(self, value):
+		self.value = value
+
+	def matches(self, finding):
+		return finding.resourceName.lower() == self.value.lower() or \
+				finding.code.lower() == self.value.lower()
+
+	def __eq__(self, other):
+		if not isinstance(other, ResourceOrCodeFindingToBlock):
 			return False
 
 		return self.value == other.value
