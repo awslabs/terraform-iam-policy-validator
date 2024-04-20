@@ -1,5 +1,5 @@
 ## IAM Policy Validator for Terraform
-A command line tool that takes a Terraform template, parses IAM identity-based and resource-based policies, then runs them through [IAM Access Analyzer policy validation checks](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-reference-policy-checks.html).
+A command line tool that takes a Terraform template, parses IAM identity-based and resource-based policies, then runs them through [IAM Access Analyzer policy validation checks](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-reference-policy-checks.html) and (optionally) through IAM Access Analyzer custom policy checks. Note that a charge is associated with each custom policy check. For more details about pricing, see [IAM Access Analyzer pricing](https://aws.amazon.com/iam/access-analyzer/pricing/).
 
 ## Table of Contents<!-- omit in toc -->
 
@@ -40,7 +40,9 @@ The principal used to execute the tool requires the following permissions.
             "Sid": "AccessAnalyzerValidatePolicy",
             "Effect": "Allow",
             "Action": [
-                "access-analyzer:ValidatePolicy"
+                "access-analyzer:ValidatePolicy",
+                "access-analyzer:CheckNoNewAccess",
+                "access-analyzer:CheckAccessNotGranted"
             ],
             "Resource": "*"
         }
@@ -50,14 +52,21 @@ The principal used to execute the tool requires the following permissions.
 | Action Name| Justificiation |
 | ---------- | ------------- |
 | access-analyzer:ValidatePolicy | Called for each policy to validate against IAM policy best practices. |
+| access-analyzer:CheckNoNewAccess | Called for each policy to validate against a reference policy to compare permissions. |
+| access-analyzer:CheckAccessNotGranted | Called for each policy to validate that it does not grant access to a list of IAM actions, considered as critical permissions, provided as input. |
 
 
 ### Basic usage
 ```
-tf-policy-validator --config iam_check/config/default.yaml --template-path ./my-template.json --region us-east-1
+tf-policy-validator validate --config iam_check/config/default.yaml --template-path ./my-template.json --region us-east-1
 ```
 
-### Avaliable commands
+### Commands
+**validate**
+```
+tf-policy-validator validate --config iam_check/config/default.yaml --template-path ./my-template.json --region us-east-1
+```
+Parses IAM identity-based and resource-based policies from Terraform templates. Then runs the policies through IAM Access Analyzer for validation. Returns the findings from validation in JSON format. Exits with a non-zero error code if any findings categorized as blocking are found in your template. Exits with an error code of zero if all findings are non-blocking or there are no findings.
 
 | Arguments | Required |  Options | Description |
 | --------- | -------- | ---------| ----------- |
@@ -70,6 +79,44 @@ tf-policy-validator --config iam_check/config/default.yaml --template-path ./my-
 | --treat-finding-type-as-blocking | | ERROR,SECURITY_WARNING,WARNING,SUGGESTION,NONE | Specify which finding types should be treated as blocking. Other finding types are treated as nonblocking.  If the tool detects any blocking finding types, it will exit with a non-zero exit code.  If all findings are nonblocking or there are no findings, the tool exits with an exit code of 0.  Defaults to "ERROR" and "SECURITY_WARNING". Specify as a comma separated list of finding types that should be blocking. Pass "NONE" to ignore all findings. |
 | --allow-external-principals | | ACCOUNT,ARN | A comma separated list of external principals that should be ignored.  Specify as a comma separated list of a 12 digit AWS account ID, a federated web identity user, a federated SAML user, or an ARN. Specify "*" to allow anonymous access. (e.g. 123456789123,arn:aws:iam::111111111111:role/MyOtherRole,graph.facebook.com) |
 | --config |Yes | FILE_NAME1, FILE_NAME2, ... | A list of config files for running this script |
+**check-no-new-access**
+```
+tf-policy-validator check-no-new-access --config iam_check/config/default.yaml --template-path iam_check/test/test_policy_accessanalyzer.json --region us-west-2 --reference-policy-type identity --reference-policy iam_check/test/test_policy.json
+```
+Parses IAM identity-based and resource-based policies from Terraform templates. Then runs the policies through IAM Access Analyzer for a custom check against a reference policy. Returns the findings from the custom check in JSON format. Exits with a non-zero error code if any findings categorized as blocking, based on new access, are found in your template. Exits with an error code of zero if all findings are non-blocking or there are no findings. You can find examples for reference policies and learn how to set up and run a custom policy check for new access in the [IAM Access Analyzer custom policy checks samples](https://github.com/aws-samples/iam-access-analyzer-custom-policy-check-samples) repository on GitHub.
+
+| Arguments | Required |  Options | Description |
+| --------- | -------- | ---------| ----------- |
+| --help  | | | show this help message and exit |
+| --template-path | | FILE_NAME | The path to the Terraform plan file (JSON). |
+| --region | Yes | REGION | The destination region the resources will be deployed to. |
+| --profile | | PROFILE | The named profile to use for AWS API calls. |
+| --enable-logging | | | Enables log output to stdout |
+| --ignore-finding | | FINDING_CODE,RESOURCE_NAME,RESOURCE_NAME.FINDING_CODE | Allow validation failures to be ignored. Specify as a comma separated list of findings to be ignored. Can be individual finding codes (e.g. "PASS_ROLE_WITH_STAR_IN_RESOURCE"), a specific resource name (e.g. "MyResource"), or a combination of both separated by a period.(e.g. "MyResource.PASS_ROLE_WITH_STAR_IN_RESOURCE").  Names of finding codes may change in IAM Access Analyzer over time. |
+| --reference-policy | Yes | FILE_PATH.json | A JSON formatted file that specifies the path to the reference policy that is used for a permissions comparison.   |
+| --reference-policy-type | Yes | IDENTITY or RESOURCE | The policy type associated with the IAM policy under analysis and the reference policy.  |
+| --treat-findings-as-non-blocking | | | When not specified, the tool detects any findings, it will exit with a non-zero exit code. When specified, the tool exits with an exit code of 0. |
+| --exclude-resource-types | | aws_resource_type, aws_resource_type | List of comma-separated resource types. Resource types should be the same as terraform template resource names such as aws_iam_group_policy, aws_iam_role |
+| --config |Yes | FILE_NAME1, FILE_NAME2, ... | A list of config files for running this script |
+
+**check-access-not-granted**
+```
+tf-policy-validator check-access-not-granted --config iam_check/config/default.yaml --template-path iam_check/test/test_policy_accessanalyzer.json --region us-west-2 --actions lambda:invokeFunction
+```
+Parses IAM identity-based and resource-based policies from Terraform templates. Then runs the policies through IAM Access Analyzer for a custom check against a list of IAM actions. Returns the findings from the custom check in JSON format. Exits with a non-zero error code if any findings categorized as blocking, based on access granted to at least one of the listed IAM actions, are found in your template. Exits with an error code of zero if all findings are non-blocking or there are no findings.
+
+| Arguments | Required |  Options | Description |
+| --------- | -------- | ---------| ----------- |
+| --help  | | | show this help message and exit |
+| --template-path | | FILE_NAME | The path to the Terraform plan file (JSON). |
+| --region | Yes | REGION | The destination region the resources will be deployed to. |
+| --profile | | PROFILE | The named profile to use for AWS API calls. |
+| --enable-logging | | | Enables log output to stdout |
+| --ignore-finding | | FINDING_CODE,RESOURCE_NAME,RESOURCE_NAME.FINDING_CODE | Allow validation failures to be ignored. Specify as a comma separated list of findings to be ignored. Can be individual finding codes (e.g. "PASS_ROLE_WITH_STAR_IN_RESOURCE"), a specific resource name (e.g. "MyResource"), or a combination of both separated by a period.(e.g. "MyResource.PASS_ROLE_WITH_STAR_IN_RESOURCE").  Names of finding codes may change in IAM Access Analyzer over time. |
+| --actions | Yes | ACTION,ACTION,ACTION | List of comma-separated actions. |
+| --treat-findings-as-non-blocking | | | When not specified, the tool detects any findings, it will exit with a non-zero exit code. When specified, the tool exits with an exit code of 0. |
+| --exclude-resource-types | | aws_resource_type, aws_resource_type | List of comma-separated resource types. Resource types should be the same as terraform template resource names such as aws_iam_group_policy, aws_iam_role |
+| --config |Yes | FILE_NAME1, FILE_NAME2, ... | A list of config files for running this script |
 
 ### Example to check Terraform template
 ```
@@ -79,6 +126,8 @@ $ terraform plan -out tf.plan ## generate terraform plan file
 $ terraform show -json -no-color tf.plan > tf.json ## convert plan files to machine-readable JSON files. For TF 0.12 and prior, use command `terraform show tf.plan > tf.out`
 $ cd ../..
 $ tf-policy-validator --config iam_check/config/default.yaml --template-path iam_check/test/tf.json --region us-east-1 --treat-finding-type-as-blocking ERROR # For TF 0.12 and prior, replace tf.json with tf.out
+$ tf-policy-validator check-no-new-access --config iam_check/config/default.yaml --template-path iam_check/test/test_policy_accessanalyzer.json --region us-west-2 --reference-policy-type identity --reference-policy iam_check/test/test_policy.json
+$ tf-policy-validator check-access-not-granted --config iam_check/config/default.yaml --template-path iam_check/test/test_policy_accessanalyzer.json --region us-west-2 --actions lambda:invokeFunction
 ```
 
 _More examples can be found [here](iam_check/doc/)_.

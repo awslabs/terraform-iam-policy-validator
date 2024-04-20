@@ -65,6 +65,22 @@ class Findings:
 			elif finding_type == 'WARNING':
 				self.warnings.append(finding)
 
+	def add_policy_analysis_finding(self, findings, resource_name, policy_name):
+		for raw_finding in findings:
+			finding_type = raw_finding.get('findingType')
+			finding = Finding(
+				message=raw_finding.get('message'),
+				finding_type=finding_type,
+				policy_name=policy_name,
+				resource_name=resource_name,
+				details=raw_finding.get('response'),
+				code=raw_finding.get('code')
+			)
+			if finding_type == 'ERROR':
+				self.errors.append(finding)
+			elif finding_type == 'SECURITY_WARNING':
+				self.security_warnings.append(finding)
+
 	def add_external_principal_finding(self, findings, resource_name, policy_name):
 		for raw_finding in findings:
 			finding = Finding(

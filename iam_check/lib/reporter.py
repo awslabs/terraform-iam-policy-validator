@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT-0
 import json
 
 from . import default_to_json
-from ..tools import regex_patterns
+from iam_check.tools import regex_patterns
 
 default_finding_types_that_are_blocking = ['ERROR', 'SECURITY_WARNING']
 
