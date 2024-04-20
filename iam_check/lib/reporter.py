@@ -16,7 +16,7 @@ class Reporter:
 	Determines what findings should be reported to the end user based on parameters provided when starting validation.
 	"""
 
-	def __init__(self, findings_to_ignore, finding_types_that_are_blocking, allowed_external_principals, finding_codes_that_are_blocking):
+	def __init__(self, findings_to_ignore, finding_types_that_are_blocking, allowed_external_principals, finding_codes_that_are_blocking=default_finding_codes_that_are_blocking):
 		self.blocking_findings = []
 		self.nonblocking_findings = []
 		self.findings_to_ignore = findings_to_ignore

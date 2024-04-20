@@ -18,6 +18,15 @@ class TestAccessAnalyzer:
         findings = _load_json_file("test/iam_policy/findings.json")
         assert(Reporter(None, None, None).build_report_from(check.findings).to_json() == findings)
 
+    def test_a2_code_blocking(self):
+        file = _load_json_file(f"test/multiple_policies/test_plan.json")
+        plan = TerraformPlan(**file)
+        reference_policy = _load_json_file(f"test/multiple_policies/identity_codes_reference_policy.json")
+        check = Comparator("us-west-2", json.dumps(reference_policy), reference_policy_type="identity")
+        check.run(plan)
+        test_findings = _load_json_file(f"test/multiple_policies/identity_codes.json")
+        assert(Reporter(None, [], None, ['ALLOW_WITH_UNSUPPORTED_TAG_CONDITION_KEY_FOR_SERVICE']).build_report_from(check.findings).to_json() == test_findings)
+
     def test_a2_policy_check_no_new_access_mixed_policies(self):
         for dir_name in ["multiple_policies", "role_inline_assume_policy"]:
             file = _load_json_file(f"test/{dir_name}/test_plan.json")
