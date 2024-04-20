@@ -4,11 +4,25 @@
     {
       "Effect": "Allow",
       "Action": [
-        "kinesis:*"
+        "kinesis:Get*",
+        "kinesis:DescribeStreamSummary"
+      ],
+      "Resource": [
+        "arn:aws:kinesis:us-east-1:111122223333:stream/stream1"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kinesis:ListStreams",
+        "ec2:DescribeVolumes"
+      ],
+      "Resource": [
+        "*"
       ],
       "Condition": {
         "StringEquals": {
-            "aws:ResourceTag/mykey": "myvalue"
+          "aws:ResourceTag/environment": "production"
         }
       }
     }

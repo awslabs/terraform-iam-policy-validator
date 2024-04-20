@@ -21,7 +21,7 @@ resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
 }
 
 data "aws_iam_policy_document" "allow_access_from_another_account" {
-  statement {
+  statement {    
     principals {
       type        = "AWS"
       identifiers = ["123456789012"]
@@ -64,27 +64,13 @@ resource "aws_iam_user_policy" "lb_ro" {
           "ec2:Describe*",
         ]
         Effect   = "Allow"
-        Resource = "*"
+        Resource = "*",
+        Condition = {
+          "StringEquals" = {
+            "aws:ResourceTag/environment" = "production"
+          }
+        }
       },
     ]
   })
-}
-
-resource "aws_kinesis_stream" "test_stream" {
-  name             = "terraform-kinesis-test"
-  shard_count      = 1
-  retention_period = 48
-
-  shard_level_metrics = [
-    "IncomingBytes",
-    "OutgoingBytes",
-  ]
-
-  stream_mode_details {
-    stream_mode = "PROVISIONED"
-  }
-
-  tags = {
-    Environment = "test"
-  }
 }

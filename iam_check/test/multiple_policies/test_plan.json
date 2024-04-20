@@ -52,53 +52,10 @@
                     "values": {
                         "name": "test",
                         "name_prefix": null,
-                        "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:Describe*\"],\"Effect\":\"Allow\",\"Resource\":\"*\"}]}",
+                        "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:Describe*\"],\"Condition\":{\"StringEquals\":{\"aws:ResourceTag/environment\":\"production\"}},\"Effect\":\"Allow\",\"Resource\":\"*\"}]}",
                         "user": "loadbalancer"
                     },
                     "sensitive_values": {}
-                },
-                {
-                    "address": "aws_kinesis_stream.test_stream",
-                    "mode": "managed",
-                    "type": "aws_kinesis_stream",
-                    "name": "test_stream",
-                    "provider_name": "registry.terraform.io/hashicorp/aws",
-                    "schema_version": 1,
-                    "values": {
-                        "encryption_type": "NONE",
-                        "enforce_consumer_deletion": false,
-                        "kms_key_id": null,
-                        "name": "terraform-kinesis-test",
-                        "retention_period": 48,
-                        "shard_count": 1,
-                        "shard_level_metrics": [
-                            "IncomingBytes",
-                            "OutgoingBytes"
-                        ],
-                        "stream_mode_details": [
-                            {
-                                "stream_mode": "PROVISIONED"
-                            }
-                        ],
-                        "tags": {
-                            "Environment": "test"
-                        },
-                        "tags_all": {
-                            "Environment": "test"
-                        },
-                        "timeouts": null
-                    },
-                    "sensitive_values": {
-                        "shard_level_metrics": [
-                            false,
-                            false
-                        ],
-                        "stream_mode_details": [
-                            {}
-                        ],
-                        "tags": {},
-                        "tags_all": {}
-                    }
                 },
                 {
                     "address": "aws_s3_bucket.example",
@@ -225,7 +182,7 @@
                 "after": {
                     "name": "test",
                     "name_prefix": null,
-                    "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:Describe*\"],\"Effect\":\"Allow\",\"Resource\":\"*\"}]}",
+                    "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"ec2:Describe*\"],\"Condition\":{\"StringEquals\":{\"aws:ResourceTag/environment\":\"production\"}},\"Effect\":\"Allow\",\"Resource\":\"*\"}]}",
                     "user": "loadbalancer"
                 },
                 "after_unknown": {
@@ -233,68 +190,6 @@
                 },
                 "before_sensitive": false,
                 "after_sensitive": {}
-            }
-        },
-        {
-            "address": "aws_kinesis_stream.test_stream",
-            "mode": "managed",
-            "type": "aws_kinesis_stream",
-            "name": "test_stream",
-            "provider_name": "registry.terraform.io/hashicorp/aws",
-            "change": {
-                "actions": [
-                    "create"
-                ],
-                "before": null,
-                "after": {
-                    "encryption_type": "NONE",
-                    "enforce_consumer_deletion": false,
-                    "kms_key_id": null,
-                    "name": "terraform-kinesis-test",
-                    "retention_period": 48,
-                    "shard_count": 1,
-                    "shard_level_metrics": [
-                        "IncomingBytes",
-                        "OutgoingBytes"
-                    ],
-                    "stream_mode_details": [
-                        {
-                            "stream_mode": "PROVISIONED"
-                        }
-                    ],
-                    "tags": {
-                        "Environment": "test"
-                    },
-                    "tags_all": {
-                        "Environment": "test"
-                    },
-                    "timeouts": null
-                },
-                "after_unknown": {
-                    "arn": true,
-                    "id": true,
-                    "shard_level_metrics": [
-                        false,
-                        false
-                    ],
-                    "stream_mode_details": [
-                        {}
-                    ],
-                    "tags": {},
-                    "tags_all": {}
-                },
-                "before_sensitive": false,
-                "after_sensitive": {
-                    "shard_level_metrics": [
-                        false,
-                        false
-                    ],
-                    "stream_mode_details": [
-                        {}
-                    ],
-                    "tags": {},
-                    "tags_all": {}
-                }
             }
         },
         {
@@ -528,43 +423,6 @@
                     "schema_version": 0
                 },
                 {
-                    "address": "aws_kinesis_stream.test_stream",
-                    "mode": "managed",
-                    "type": "aws_kinesis_stream",
-                    "name": "test_stream",
-                    "provider_config_key": "aws",
-                    "expressions": {
-                        "name": {
-                            "constant_value": "terraform-kinesis-test"
-                        },
-                        "retention_period": {
-                            "constant_value": 48
-                        },
-                        "shard_count": {
-                            "constant_value": 1
-                        },
-                        "shard_level_metrics": {
-                            "constant_value": [
-                                "IncomingBytes",
-                                "OutgoingBytes"
-                            ]
-                        },
-                        "stream_mode_details": [
-                            {
-                                "stream_mode": {
-                                    "constant_value": "PROVISIONED"
-                                }
-                            }
-                        ],
-                        "tags": {
-                            "constant_value": {
-                                "Environment": "test"
-                            }
-                        }
-                    },
-                    "schema_version": 1
-                },
-                {
                     "address": "aws_s3_bucket.example",
                     "mode": "managed",
                     "type": "aws_s3_bucket",
@@ -659,5 +517,5 @@
             ]
         }
     ],
-    "timestamp": "2024-04-20T20:55:53Z"
+    "timestamp": "2024-04-20T21:53:24Z"
 }
