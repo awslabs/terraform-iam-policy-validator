@@ -26,7 +26,7 @@ tf-policy-validator = "iam_check.iam_check:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-boto3 = "^1.26.77"
+boto3 = "^1.34.110"
 pyyaml = "^6.0"
 
 
