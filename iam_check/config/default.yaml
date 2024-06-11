@@ -31,6 +31,8 @@ arnServiceMap:
   # aws_lambda_layer_version_permission: layer_name?fakeLayberName
   aws_media_store_container_policy: container_name?fakeContainerName
   aws_networkfirewall_resource_policy: resource_arn?fakeResourceArn
+  aws_opensearch_domain: domain_name?fakeDomainName 
+  aws_opensearch_domain_policy: domain_name?fakeDomainName
   aws_organizations_policy: name?fakename
   aws_s3_access_point: name?fakename
   aws_s3_bucket: bucket?fakeBucket
@@ -92,6 +94,8 @@ iamPolicyAttributes:
   # aws_lambda_layer_version_permission: policy
   aws_media_store_container_policy: policy
   aws_networkfirewall_resource_policy: policy
+  aws_opensearch_domain: access_policies
+  aws_opensearch_domain_policy: access_policies
   aws_organizations_policy: content
   aws_s3_access_point: policy
   aws_s3_bucket: policy

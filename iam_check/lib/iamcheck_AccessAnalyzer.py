@@ -7,10 +7,34 @@ from . import iamPolicy
 import iam_check.config as config
 from botocore.exceptions import ClientError
 from botocore.config import Config
+from iam_check.application_error import ApplicationError as ApplicationError
 
 LOGGER = logging.getLogger('iam-policy-validator-for-terraform')
 ACTIONS_MAX_ITEMS = 100
+RESOURCES_MAX_ITEMS = 100
 POLICY_ANALYSIS_PREFIX = 'policy-analysis-'
+# Mapping of terraform resource type to supported official types
+# This list needs to be kept in sync as IAM custom policy checks supports additional resource types.
+RESOURCE_TYPE_MAP = {
+    "aws_efs_file_system_policy": "AWS::EFS::FileSystem",
+    "aws_opensearch_domain": "AWS::OpenSearchService::Domain",
+    "aws_opensearch_domain_policy": "AWS::OpenSearchService::Domain",
+    "aws_kms_key": "AWS::KMS::Key",
+    "aws_s3_bucket": "AWS::S3::Bucket",
+    "aws_s3_bucket_policy": "AWS::S3::Bucket",
+    "aws_s3_access_point": "AWS::S3::AccessPoint",
+    "aws_s3control_access_point_policy": "AWS::S3::AccessPoint",
+    "aws_glacier_vault": "AWS::S3::Glacier",
+    "aws_glacier_vault_lock": "AWS::S3::Glacier",
+    "aws_s3control_bucket_policy": "AWS::S3Outposts::Bucket",
+    "aws_secretsmanager_secret": "AWS::SecretsManager::Secret",
+    "aws_secretsmanager_secret_policy:": "AWS::SecretsManager::Secret",
+    "aws_sns_topic": "AWS::SNS::Topic",
+    "aws_sns_topic_policy": "AWS::SNS::Topic",
+    "aws_sqs_queue": "AWS::SQS::Queue",
+    "aws_sqs_queue_policy": "AWS::SQS::Queue",
+    "assume_role_policy": "AWS::IAM::AssumeRolePolicyDocument"
+}
 
 class Validator:
     def __init__(self, account_id, region, partition):
@@ -34,7 +58,7 @@ class Validator:
 		# want to rely on that
 		#to move this to config file
         self.maximum_number_of_access_preview_attempts = 150
-        
+
     def run(self, plan):
         policies = plan.findPolicies()
         for ref, policy in policies.items():
@@ -89,8 +113,8 @@ class PolicyAnalysis:
         self.findings = Findings()
         self.identity_policy_cache = {}
         self.resource_policy_cache = {}
-    
-    
+
+
     def _handle_response(self, response, resource_name, policy_name, operation_name):
         """
         Builds a list of raw findings based on the API response
@@ -119,12 +143,12 @@ class PolicyAnalysis:
             # Add finding for 400 errors
             else:
                 code += response['Error']['Code']
-                finding_type = "ERROR"    
+                finding_type = "ERROR"
         else:
             finding_type = "SECURITY_WARNING"
         response_no_metadata = response.copy()
         rawFinding = {
-            'message': response.get('message'), 
+            'message': response.get('message'),
             'findingType': finding_type,
             'response': response_no_metadata,
             'code': code
@@ -137,17 +161,19 @@ class PolicyAnalysis:
 
     def _get_policy_type():
         pass
-    
+
     def run(self, plan):
         policies = plan.findPolicies()
         for ref, policy_str in policies.items():
             LOGGER.info(f'check policy at: {ref}')
             policy_resource_type=ref.split('.')[0]
+            LOGGER.info(f'resource type = {policy_resource_type}')
             policy_attribute_type=ref.split('.')[-1]
+            LOGGER.info(f'policy attribute type = {policy_resource_type}')
             policy_name = '.'.join(ref.split('.')[0:-1])
             resource_name = plan.getResourceName(policy_name)
             LOGGER.info(f'start checking policy:{policy_str}')
-            policy_type = get_policy_type(policy_resource_type, policy_attribute_type) 
+            policy_type = get_policy_type(policy_resource_type, policy_attribute_type)
             cache = self.identity_policy_cache if policy_type == "IDENTITY_POLICY" else self.resource_policy_cache
             response = cache.get(policy_str)
             if response is None:
@@ -163,7 +189,7 @@ class Comparator(PolicyAnalysis):
         self.reference_policy = reference_policy
         self.operation_name = "CheckNoNewAccess"
         self.reference_policy_type = reference_policy_type
-    
+
     def _call_api(self, policy, policy_type):
         if self.reference_policy_type == "identity" and policy_type != "IDENTITY_POLICY":
             return []
@@ -182,21 +208,33 @@ class Comparator(PolicyAnalysis):
 
 class AccessChecker(PolicyAnalysis):
 
-    def __init__(self, region, actions):
+    def __init__(self, region, actions=[], resources=[]):
+        #add resources to this, copy paste from cfn files
         PolicyAnalysis.__init__(self, region)
         self.accesses = []
-        for i in range(0, len(actions), ACTIONS_MAX_ITEMS): 
-            access = [{
-                "actions": actions[i:min(ACTIONS_MAX_ITEMS + i, len(actions))]
-            }]
-            self.accesses.append(access)
+        if actions:
+            for i in range (0, len(actions), ACTIONS_MAX_ITEMS):
+                access = [self.create_access(actions, resources)]
+                self.accesses.append(access)
+        elif resources:
+            self.accesses.append([self.create_access(actions, resources)])
         self.operation_name = "CheckAccessNotGranted"
+
+    def create_access(self, actions, resources):
+        access = {}
+        if actions:
+            access["actions"] = actions
+        if resources:
+            if len(resources) > RESOURCES_MAX_ITEMS:
+                raise ApplicationError("Too many resource ARNs were specified. You may only specify up to 100 resource ARNs.")
+            access["resources"] = resources
+        return access
+
 
     def _call_api(self, policy, policy_type):
         responses = []
         failed_response = {
             "result": "FAIL",
-            "message": "The policy document grants access to perform one or more of the listed actions.",
             "reasons": []
         }
         for access in self.accesses:
@@ -210,6 +248,7 @@ class AccessChecker(PolicyAnalysis):
             except ClientError as error:
                 response = error.response
             if response.get('result') == 'FAIL':
+                failed_response['message'] = response.get('message')
                 reasons = response.get('reasons')
                 if reasons is not None:
                     for r in reasons:
@@ -226,3 +265,52 @@ class AccessChecker(PolicyAnalysis):
         if failed_response.get('ResponseMetadata'): # There were fail responses
             responses.append(failed_response)
         return responses
+
+class PublicAccessChecker(PolicyAnalysis):
+
+    def __init__(self, region):
+        PolicyAnalysis.__init__(self, region)
+        self.operation_name = "CheckNoPublicAccess"
+
+    def _call_api(self, policy, resource_type):
+        try:
+            response = self.client.check_no_public_access(
+                policyDocument=policy,
+                resourceType=resource_type
+            )
+        except ClientError as error:
+            return error.response
+
+        return response
+
+    def run(self, plan):
+        # Override default plan run behavior since CheckNoPublicAccess only takes resource policies.
+        # We also want to account for resource type as well in caching results
+        policies = plan.findPolicies()
+        # See tfPlan.findPolicies() for how reference is constructed. Example reference: aws_s3_bucket.example.policy
+        for ref, policy_str in policies.items():
+            LOGGER.info(f'check policy at: {ref}')
+            policy_resource_type=ref.split('.')[0]
+            policy_attribute_type=ref.split('.')[-1]
+            policy_type = get_policy_type(policy_resource_type, policy_attribute_type)
+            # Skip non resource policies
+            if policy_type != "RESOURCE_POLICY":
+                continue
+            # Get the official AWS resource type. assume_role_policy is under policy_attribute_type
+            aws_resource_type = RESOURCE_TYPE_MAP.get(policy_resource_type, RESOURCE_TYPE_MAP.get(policy_attribute_type))
+            # Skip resource type if it is not one of the officially supported types
+            if not aws_resource_type:
+                LOGGER.info(f'Resource type {policy_resource_type} not found in the mapping of terraform to official AWS types')
+                continue
+            policy_name = '.'.join(ref.split('.')[0:-1])
+            resource_name = plan.getResourceName(policy_name)
+            LOGGER.info(f'start checking policy:{policy_str}')
+
+            # Include resource type in cache key, since resources of different types might have the same policy but
+            # use different BPA check
+            cache = self.resource_policy_cache
+            response = cache.get((policy_str, aws_resource_type))
+            if response is None:
+                response = self._call_api(policy_str, aws_resource_type)
+                cache[(policy_str, aws_resource_type)] = response
+            self._handle_response(response, resource_name, policy_name, self.operation_name)
