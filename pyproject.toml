@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tf-policy-validator"
-version = "0.0.7"
+version = "0.0.8"
 description = "A command line tool that validates AWS IAM Policies in a Terraform template against AWS IAM best practices"
 authors = ["Policy Validator Maintainers <terraform-policy-validator@amazon.com>"]
 readme = "README.md"
@@ -26,7 +26,7 @@ tf-policy-validator = "iam_check.iam_check:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-boto3 = "^1.34.110"
+boto3 = "^1.34.124"
 pyyaml = "^6.0"
 
 

@@ -1,0 +1,74 @@
+{
+    "BlockingFindings": [
+        {
+            "findingType": "SECURITY_WARNING",
+            "code": "policy-analysis-CheckNoPublicAccess",
+            "message": "The resource policy grants public access for the given resource type.",
+            "resourceName": "test_role",
+            "policyName": "aws_iam_role.test_role",
+            "details": {
+                "result": "FAIL",
+                "message": "The resource policy grants public access for the given resource type.",
+                "reasons": [
+                    {
+                        "description": "Public access granted in the following statement with index: 0.",
+                        "statementIndex": 0
+                    }
+                ]
+            }
+        },
+        {
+            "findingType": "SECURITY_WARNING",
+            "code": "policy-analysis-CheckNoPublicAccess",
+            "message": "The resource policy grants public access for the given resource type.",
+            "resourceName": "tf-test",
+            "policyName": "aws_opensearch_domain_policy.main",
+            "details": {
+                "result": "FAIL",
+                "message": "The resource policy grants public access for the given resource type.",
+                "reasons": [
+                    {
+                        "description": "Public access granted in the following statement with index: 0.",
+                        "statementIndex": 0
+                    }
+                ]
+            }
+        },
+        {
+            "findingType": "SECURITY_WARNING",
+            "code": "policy-analysis-CheckNoPublicAccess",
+            "message": "The resource policy grants public access for the given resource type.",
+            "resourceName": "my-tf-test-bucket",
+            "policyName": "aws_s3_bucket_policy.allow_public_access",
+            "details": {
+                "result": "FAIL",
+                "message": "The resource policy grants public access for the given resource type.",
+                "reasons": [
+                    {
+                        "description": "Public access granted in the following statement with index: 0.",
+                        "statementIndex": 0
+                    }
+                ]
+            }
+        },
+        {
+            "findingType": "SECURITY_WARNING",
+            "code": "policy-analysis-CheckNoPublicAccess",
+            "message": "The resource policy grants public access for the given resource type.",
+            "resourceName": "arn:aws:sns:us-east-2:123456789012:my-topic-with-policy",
+            "policyName": "aws_sns_topic_policy.default",
+            "details": {
+                "result": "FAIL",
+                "message": "The resource policy grants public access for the given resource type.",
+                "reasons": [
+                    {
+                        "description": "Public access granted in the following statement with sid: __default_statement_ID.",
+                        "statementId": "__default_statement_ID",
+                        "statementIndex": 0
+                    }
+                ]
+            }
+        }
+    ],
+    "NonBlockingFindings": []
+}

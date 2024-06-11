@@ -1,0 +1,55 @@
+{
+  "BlockingFindings": [
+    {
+      "findingType": "ERROR",
+      "code": "policy-analysis-CheckAccessNotGrantedValidationException",
+      "message": "Invalid ARN",
+      "resourceName": "fakeBucket",
+      "policyName": "aws_s3_bucket_policy.allow_access_from_another_account",
+      "details": {
+        "Error": {
+          "Message": "Invalid ARN",
+          "Code": "ValidationException"
+        },
+        "message": "Invalid ARN",
+        "reason": "fieldValidationFailed",
+        "accessInput": [
+          {
+            "actions": [
+              "s3:GetObject"
+            ],
+            "resources": [
+              "example"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "findingType": "ERROR",
+      "code": "policy-analysis-CheckAccessNotGrantedValidationException",
+      "message": "Invalid ARN",
+      "resourceName": "fakeBucket",
+      "policyName": "aws_s3_bucket_policy.allow_access_from_other_account",
+      "details": {
+        "Error": {
+          "Message": "Invalid ARN",
+          "Code": "ValidationException"
+        },
+        "message": "Invalid ARN",
+        "reason": "fieldValidationFailed",
+        "accessInput": [
+          {
+            "actions": [
+              "s3:GetObject"
+            ],
+            "resources": [
+              "example"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "NonBlockingFindings": []
+}
