@@ -1,0 +1,12 @@
+# https://black.readthedocs.io/en/stable/integrations/github_actions.html
+
+name: Lint - black
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: psf/black@24.4.2
