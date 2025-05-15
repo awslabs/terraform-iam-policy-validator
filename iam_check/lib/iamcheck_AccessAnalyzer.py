@@ -69,26 +69,33 @@ class Validator:
             resource_name = plan.getResourceName(policy_name)
             p = iamPolicy.Policy(json=policy)
             LOGGER.info(f"start checking policy:{p}")
+
+            # Default to identity policy
             policyType = "IDENTITY_POLICY"
+            # Check for resource policy
             for statement in p.getStatement():
                 if (
-                    statement.getPrincipal() != None
-                    or statement.getNotPrincipal() != None
+                    statement.getPrincipal() is not None
+                    or statement.getNotPrincipal() is not None
                 ):
                     policyType = "RESOURCE_POLICY"
-                    continue
+                    break
+            # Check for Service Control Policy
+            if policy_resource_type == "aws_organizations_policy":
+                policyType = "SERVICE_CONTROL_POLICY"
+
             if policy_resource_type not in config.validatePolicyResourceType:
                 response = self.client.validate_policy(
                     policyDocument=str(p), policyType=policyType
                 )
             else:
-                policy_resource_type = config.validatePolicyResourceType[
+                policy_resource_type_mapped = config.validatePolicyResourceType[
                     policy_resource_type
                 ]
                 response = self.client.validate_policy(
                     policyDocument=str(p),
                     policyType=policyType,
-                    validatePolicyResourceType=policy_resource_type,
+                    validatePolicyResourceType=policy_resource_type_mapped,
                 )
             validation_findings = response["findings"]
             self.findings.add_validation_finding(
@@ -99,18 +106,22 @@ class Validator:
 def get_policy_type(resource_type, resource_attribute_name=None):
     # https://registry.terraform.io/providers/hashicorp/aws/latest/docs
     if resource_type in [
-        "aws_iam_group_policy",
-        "aws_iam_policy",
-        "aws_iam_role",
-        "aws_iam_role_policy",
-        "aws_iam_user_policy",
-    ]:
-        if (
-            resource_type == "aws_iam_role"
-            and resource_attribute_name == "assume_role_policy"
-        ):
-            return "RESOURCE_POLICY"
-        return "IDENTITY_POLICY"
+            "aws_iam_group_policy",
+            "aws_iam_policy",
+            "aws_iam_role",
+            "aws_iam_role_policy",
+            "aws_iam_user_policy",
+            "aws_organizations_policy",
+        ]:
+            if (
+                resource_type == "aws_iam_role"
+                and resource_attribute_name == "assume_role_policy"
+            ):
+                return "RESOURCE_POLICY"
+            # Detect Service Control Policy type
+            if resource_type == "aws_organizations_policy":
+                return "SERVICE_CONTROL_POLICY"
+            return "IDENTITY_POLICY"
     else:
         return "RESOURCE_POLICY"
 
