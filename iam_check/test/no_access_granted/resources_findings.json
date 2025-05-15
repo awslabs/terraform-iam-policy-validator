@@ -3,14 +3,14 @@
     {
       "findingType": "SECURITY_WARNING",
       "code": "policy-analysis-CheckAccessNotGranted",
-      "message": "The policy document grants access to perform one or more of the listed actions or resources.",
+      "message": "The policy document grants access to one or more of the listed resources.",
       "resourceName": "fakeBucket",
       "policyName": "aws_s3_bucket_policy.allow_access_from_another_account",
       "details": {
         "result": "FAIL",
         "reasons": [
           {
-            "description": "One or more of the listed actions or resources in the statement with index: 0.",
+            "description": "One or more of the listed resources in the statement with index: 0.",
             "statementIndex": 0,
             "accessInput": [
               {
@@ -21,7 +21,7 @@
             ]
           }
         ],
-        "message": "The policy document grants access to perform one or more of the listed actions or resources."
+        "message": "The policy document grants access to one or more of the listed resources."
       }
     }
   ],

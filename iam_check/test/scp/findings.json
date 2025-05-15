@@ -1,0 +1,43 @@
+{
+  "BlockingFindings": [
+    {
+      "findingType": "ERROR",
+      "code": "SCP_SYNTAX_ERROR_NOTRESOURCE",
+      "message": "SCPs do not support the NotResource element. Update the policy to use Resource instead.",
+      "resourceName": "demo-scp",
+      "policyName": "aws_organizations_policy.demo_scp",
+      "details": {
+        "findingDetails": "SCPs do not support the NotResource element. Update the policy to use Resource instead.",
+        "findingType": "ERROR",
+        "issueCode": "SCP_SYNTAX_ERROR_NOTRESOURCE",
+        "learnMoreLink": "https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-reference-policy-checks.html#access-analyzer-reference-policy-checks-error-scp-syntax-error-notresource",
+        "locations": [
+          {
+            "path": [
+              {
+                "value": "Statement"
+              },
+              {
+                "value": "NotResource"
+              }
+            ],
+            "span": {
+              "start": {
+                "line": 10,
+                "column": 23,
+                "offset": 242
+              },
+              "end": {
+                "line": 10,
+                "column": 26,
+                "offset": 245
+              }
+            }
+          }
+        ]
+      },
+      "message": "SCPs do not support the NotResource element. Update the policy to use Resource instead."
+  }
+],
+"NonBlockingFindings": []
+}

@@ -27,6 +27,17 @@ class TestAccessAnalyzer:
             == findings
         )
 
+    def test_a2_scp_validation(self):
+        file = _load_json_file("test/scp/test_plan.json")
+        plan = TerraformPlan(**file)
+        check = Validator("123456789012", "us-west-2", "aws")
+        check.run(plan)
+        findings = _load_json_file("test/scp/findings.json")
+        assert (
+            Reporter(None, ["ERROR"], None).build_report_from(check.findings).to_json()
+            == findings
+        )
+
     def test_a2_policy_check_no_new_access_mixed_policies(self):
         for dir_name in ["multiple_policies", "role_inline_assume_policy"]:
             file = _load_json_file(f"test/{dir_name}/test_plan.json")
@@ -98,8 +109,9 @@ class TestAccessAnalyzer:
     def test_a2_check_no_access_granted_actions(self):
         file = _load_json_file("test/no_access_granted/test_plan.json")
         plan = TerraformPlan(**file)
-        check = AccessChecker("us-west-2", ["s3:ListBucket"], None)
+        check = AccessChecker("eu-west-2", ["s3:ListBucket"], None)
         check.run(plan)
+        print(check.findings)
         findings = _load_json_file("test/no_access_granted/actions_findings.json")
         assert (
             Reporter(None, ["ERROR", "SECURITY_WARNING"], None)

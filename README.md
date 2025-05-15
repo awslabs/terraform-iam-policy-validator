@@ -9,9 +9,6 @@ A command line tool that takes a Terraform template, parses IAM identity-based a
 - [Frequently Asked Questions](#frequently-asked-questions)
 - [Contributors](#contributors)
 
-## Pre-requisites
-An analyzer needs to exist in the account. To create an analyzer with the account as the zone of trust, see AWS documentation [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-getting-started.html#access-analyzer-enabling).
-
 ## Getting Started
 
 ### Installation

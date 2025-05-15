@@ -1,0 +1,100 @@
+{
+    "format_version": "1.2",
+    "terraform_version": "1.11.2",
+    "planned_values": {
+        "root_module": {
+            "resources": [
+                {
+                    "address": "aws_organizations_policy.demo_scp",
+                    "mode": "managed",
+                    "type": "aws_organizations_policy",
+                    "name": "demo_scp",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "schema_version": 0,
+                    "values": {
+                        "content": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"DenyAllExceptList\",\n      \"Effect\": \"Deny\",\n      \"NotAction\": [\n        \"organizations:List*\",\n        \"organizations:Describe*\"\n      ],\n      \"NotResource\": \"*\"\n    }\n  ]\n}\n",
+                        "description": "This is a demo Service Control Policy",
+                        "name": "demo-scp",
+                        "skip_destroy": null,
+                        "tags": null,
+                        "type": "SERVICE_CONTROL_POLICY"
+                    },
+                    "sensitive_values": {
+                        "tags_all": {}
+                    }
+                }
+            ]
+        }
+    },
+    "resource_changes": [
+        {
+            "address": "aws_organizations_policy.demo_scp",
+            "mode": "managed",
+            "type": "aws_organizations_policy",
+            "name": "demo_scp",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "before": null,
+                "after": {
+                    "content": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"DenyAllExceptList\",\n      \"Effect\": \"Deny\",\n      \"NotAction\": [\n        \"organizations:List*\",\n        \"organizations:Describe*\"\n      ],\n      \"NotResource\": \"*\"\n    }\n  ]\n}\n",
+                    "description": "This is a demo Service Control Policy",
+                    "name": "demo-scp",
+                    "skip_destroy": null,
+                    "tags": null,
+                    "type": "SERVICE_CONTROL_POLICY"
+                },
+                "after_unknown": {
+                    "arn": true,
+                    "id": true,
+                    "tags_all": true
+                },
+                "before_sensitive": false,
+                "after_sensitive": {
+                    "tags_all": {}
+                }
+            }
+        }
+    ],
+    "configuration": {
+        "provider_config": {
+            "aws": {
+                "name": "aws",
+                "full_name": "registry.terraform.io/hashicorp/aws",
+                "version_constraint": "~\u003e 4.0"
+            }
+        },
+        "root_module": {
+            "resources": [
+                {
+                    "address": "aws_organizations_policy.demo_scp",
+                    "mode": "managed",
+                    "type": "aws_organizations_policy",
+                    "name": "demo_scp",
+                    "provider_config_key": "aws",
+                    "expressions": {
+                        "content": {
+                            "constant_value": "{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"DenyAllExceptList\",\n      \"Effect\": \"Deny\",\n      \"NotAction\": [\n        \"organizations:List*\",\n        \"organizations:Describe*\"\n      ],\n      \"NotResource\": \"*\"\n    }\n  ]\n}\n"
+                        },
+                        "description": {
+                            "constant_value": "This is a demo Service Control Policy"
+                        },
+                        "name": {
+                            "constant_value": "demo-scp"
+                        },
+                        "type": {
+                            "constant_value": "SERVICE_CONTROL_POLICY"
+                        }
+                    },
+                    "schema_version": 0
+                }
+            ]
+        }
+    },
+    "timestamp": "2025-05-14T14:49:47Z",
+    "applyable": true,
+    "complete": true,
+    "errored": false
+}
