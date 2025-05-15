@@ -109,7 +109,7 @@ class TestAccessAnalyzer:
     def test_a2_check_no_access_granted_actions(self):
         file = _load_json_file("test/no_access_granted/test_plan.json")
         plan = TerraformPlan(**file)
-        check = AccessChecker("eu-west-2", ["s3:ListBucket"], None)
+        check = AccessChecker("us-west-2", ["s3:ListBucket"], None)
         check.run(plan)
         print(check.findings)
         findings = _load_json_file("test/no_access_granted/actions_findings.json")
