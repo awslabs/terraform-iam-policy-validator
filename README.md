@@ -78,6 +78,7 @@ Parses IAM identity-based and resource-based policies from Terraform templates. 
 | --treat-finding-type-as-blocking | | ERROR, SECURITY_WARNING, WARNING, SUGGESTION, NONE | Specify which finding types should be treated as blocking. Other finding types are treated as nonblocking.  If the tool detects any blocking finding types, it will exit with a non-zero exit code.  If all findings are nonblocking or there are no findings, the tool exits with an exit code of 0.  Defaults to "ERROR" and "SECURITY_WARNING". Specify as a comma separated list of finding types that should be blocking. Pass "NONE" to ignore all findings. |
 | --allow-external-principals | | ACCOUNT,ARN | A comma separated list of external principals that should be ignored.  Specify as a comma separated list of a 12 digit AWS account ID, a federated web identity user, a federated SAML user, or an ARN. Specify "*" to allow anonymous access. (e.g. 123456789123,arn:aws:iam::111111111111:role/MyOtherRole,graph.facebook.com) |
 | --config |Yes | FILE_NAME1, FILE_NAME2, ... | A list of config files for running this script |
+
 **check-no-new-access**
 ```
 tf-policy-validator check-no-new-access --config iam_check/config/default.yaml --template-path iam_check/test/test_policy_accessanalyzer.json --region us-west-2 --reference-policy-type identity --reference-policy iam_check/test/test_policy.json
