@@ -177,11 +177,11 @@ resource "aws_s3tables_table_bucket_policy" "example" {
   table_bucket_arn = "arn:aws:s3tables:us-east-2:123456789012:bucket/example-bucket"
 }
 
-resource "aws_api_gateway_rest_api" "test" {
+resource "aws_api_gateway_rest_api" "example" {
   name = "example-rest-api"
 }
 
-data "aws_iam_policy_document" "rest_api_test" {
+data "aws_iam_policy_document" "rest_api_example" {
   statement {
     effect = "Allow"
 
@@ -201,9 +201,9 @@ data "aws_iam_policy_document" "rest_api_test" {
   }
 }
 
-resource "aws_api_gateway_rest_api_policy" "test" {
-  rest_api_id = aws_api_gateway_rest_api.test.id
-  policy      = data.aws_iam_policy_document.rest_api_test.json
+resource "aws_api_gateway_rest_api_policy" "example" {
+  rest_api_id = aws_api_gateway_rest_api.example.id
+  policy      = data.aws_iam_policy_document.rest_api_example.json
 }
 
 
@@ -211,7 +211,7 @@ resource "aws_codeartifact_domain" "example" {
   domain         = "example"
 }
 
-data "aws_iam_policy_document" "aws_codeartifact_domain_test" {
+data "aws_iam_policy_document" "aws_codeartifact_domain_example" {
   statement {
     effect = "Allow"
 
@@ -224,9 +224,9 @@ data "aws_iam_policy_document" "aws_codeartifact_domain_test" {
     resources = ["arn:aws:codeartifact:us-east-2:123456789012:domain/*"]
   }
 }
-resource "aws_codeartifact_domain_permissions_policy" "test" {
+resource "aws_codeartifact_domain_permissions_policy" "example" {
   domain          = aws_codeartifact_domain.example.domain
-  policy_document = data.aws_iam_policy_document.aws_codeartifact_domain_test.json
+  policy_document = data.aws_iam_policy_document.aws_codeartifact_domain_example.json
 }
 
 resource "aws_backup_vault" "example" {
@@ -264,9 +264,9 @@ resource "aws_backup_vault_policy" "example" {
 
 resource "aws_s3tables_table_policy" "example" {
   resource_policy  = data.aws_iam_policy_document.aws_s3tables_table_policy_example.json
-  name             = aws_s3tables_table.test.name
-  namespace        = aws_s3tables_table.test.namespace
-  table_bucket_arn = aws_s3tables_table.test.table_bucket_arn
+  name             = aws_s3tables_table.example.name
+  namespace        = aws_s3tables_table.example.namespace
+  table_bucket_arn = aws_s3tables_table.example.table_bucket_arn
 }
 
 data "aws_iam_policy_document" "aws_s3tables_table_policy_example" {
@@ -289,8 +289,8 @@ data "aws_iam_policy_document" "aws_s3tables_table_policy_example" {
   }
 }
 
-resource "aws_s3tables_table" "test" {
-  name             = "test_table"
+resource "aws_s3tables_table" "example" {
+  name             = "example_table"
   namespace        = aws_s3tables_namespace.example_namespace.namespace
   table_bucket_arn = aws_s3tables_namespace.example_namespace.table_bucket_arn
   format           = "ICEBERG"

@@ -22,7 +22,7 @@
             "code": "policy-analysis-CheckNoPublicAccess",
             "message": "The resource policy grants public access for the given resource type.",
             "resourceName": "example",
-            "policyName": "aws_codeartifact_domain_permissions_policy.test",
+            "policyName": "aws_codeartifact_domain_permissions_policy.example",
             "details": {
                 "result": "FAIL",
                 "message": "The resource policy grants public access for the given resource type.",
