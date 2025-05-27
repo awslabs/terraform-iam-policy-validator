@@ -148,6 +148,11 @@ Resource-based policies that can be checked with `check-no-public-access` are li
 - AWS::SecretsManager::Secret
 - AWS::SNS::Topic
 - AWS::SQS::Queue
+- AWS::S3Tables::TableBucket
+- AWS::S3Tables::Table
+- AWS::Backup::BackupVault
+- AWS::CodeArtifact::Domain
+- AWS::ApiGateway::RestApi
 - Role trust policies (AWS::IAM::AssumeRolePolicyDocument)
 
 
