@@ -1,7 +1,7 @@
-from lib import _load_json_file
-from lib.reporter import Reporter
-from lib.tfPlan import TerraformPlan
-from lib.iamcheck_AccessAnalyzer import (
+from iam_check.lib import _load_json_file
+from iam_check.lib.reporter import Reporter
+from iam_check.lib.tfPlan import TerraformPlan
+from iam_check.lib.iamcheck_AccessAnalyzer import (
     Comparator,
     Validator,
     PublicAccessChecker,

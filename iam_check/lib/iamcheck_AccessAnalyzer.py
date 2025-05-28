@@ -34,6 +34,17 @@ RESOURCE_TYPE_MAP = {
     "aws_sqs_queue": "AWS::SQS::Queue",
     "aws_sqs_queue_policy": "AWS::SQS::Queue",
     "assume_role_policy": "AWS::IAM::AssumeRolePolicyDocument",
+    "aws_s3tables_table_bucket": "AWS::S3Tables::TableBucket",
+    "aws_s3tables_table_bucket_policy": "AWS::S3Tables::TableBucket",
+    "aws_api_gateway_rest_api": "AWS::ApiGateway::RestApi",
+    "aws_api_gateway_rest_api_policy": "AWS::ApiGateway::RestApi",
+    "aws_codeartifact_domain": "AWS::CodeArtifact::Domain",
+    "aws_codeartifact_domain_permissions_policy": "AWS::CodeArtifact::Domain",
+    "aws_backup_vault": "AWS::Backup::BackupVault",
+    "aws_backup_vault_policy": "AWS::Backup::BackupVault",
+    "aws_cloudtrail_event_data_store": "AWS::CloudTrail::EventDataStore",
+    "aws_s3tables_table": "AWS::S3Tables::Table",
+    "aws_s3tables_table_policy": "AWS::S3Tables::Table",
 }
 
 
