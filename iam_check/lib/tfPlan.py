@@ -84,8 +84,8 @@ class TerraformPlan:
 
     def generatePolicyForLambda(self, resource, permissions_policies):
         action = self.getValue(f"{resource}.action")
-        function_name = self.getValue(f"{resource}.function_name")   
-        principal = self.getValue(f"{resource}.principal") 
+        function_name = self.getValue(f"{resource}.function_name")
+        principal = self.getValue(f"{resource}.principal")
         source_arn = None
         source_account = None
         principal_org_id = None
@@ -102,36 +102,33 @@ class TerraformPlan:
         except KeyError:
             pass
 
-        policy_statement = {
-            'Effect': 'Allow',
-            'Action': action
-        }
-        if 'amazonaws' in principal:
+        policy_statement = {"Effect": "Allow", "Action": action}
+        if "amazonaws" in principal:
             # this is a permission to a service
-            policy_statement['Principal'] = {'Service': principal}
+            policy_statement["Principal"] = {"Service": principal}
         else:
             # otherwise this is a permission to an account
-            policy_statement['Principal'] = {'AWS': principal}
+            policy_statement["Principal"] = {"AWS": principal}
 
         # just the function name
-        policy_statement['Resource'] = f'arn::lambda:::function:{function_name}'
+        policy_statement["Resource"] = f"arn::lambda:::function:{function_name}"
 
         if source_arn is not None:
-            condition = policy_statement.get('Condition', {})
-            condition['ArnLike'] = {'AWS:SourceArn': source_arn}
-            policy_statement['Condition'] = condition
+            condition = policy_statement.get("Condition", {})
+            condition["ArnLike"] = {"AWS:SourceArn": source_arn}
+            policy_statement["Condition"] = condition
 
         if source_account is not None:
-            condition = policy_statement.get('Condition', {})
-            condition['StringEquals'] = {'AWS:SourceAccount': source_account}
-            policy_statement['Condition'] = condition
-        
+            condition = policy_statement.get("Condition", {})
+            condition["StringEquals"] = {"AWS:SourceAccount": source_account}
+            policy_statement["Condition"] = condition
+
         if principal_org_id is not None:
-            condition = policy_statement.get('Condition', {})
-            if 'StringEquals' not in condition:
-                condition['StringEquals'] = {}
-            condition['StringEquals']['AWS:PrincipalOrgID'] = principal_org_id
-            policy_statement['Condition'] = condition
+            condition = policy_statement.get("Condition", {})
+            if "StringEquals" not in condition:
+                condition["StringEquals"] = {}
+            condition["StringEquals"]["AWS:PrincipalOrgID"] = principal_org_id
+            policy_statement["Condition"] = condition
 
         permissions_policies[f"{resource}.policy"].append(policy_statement)
         return permissions_policies
@@ -150,7 +147,9 @@ class TerraformPlan:
             if isinstance(attributes, str):
                 attributes = [attributes]
             if resourceType == "aws_lambda_permission":
-                permissions_policies = self.generatePolicyForLambda(r, permissions_policies)
+                permissions_policies = self.generatePolicyForLambda(
+                    r, permissions_policies
+                )
                 continue
             for attribute in attributes:
                 # check if attribute is a base one or inside a block
@@ -194,12 +193,9 @@ class TerraformPlan:
                             else:
                                 LOGGER.info(f"No policy found at: {ref}")
         for key, statements in permissions_policies.items():
-            policy_document = {
-                'Version': '2012-10-17',
-                'Statement': statements
-            }
+            policy_document = {"Version": "2012-10-17", "Statement": statements}
             policies[key] = json.dumps(policy_document)
-            
+
         for ref in policies.keys():
             LOGGER.debug(f"found policy at {ref}")
 

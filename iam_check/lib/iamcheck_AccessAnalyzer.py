@@ -52,7 +52,6 @@ RESOURCE_TYPE_MAP = {
     "aws_kinesis_resource_policy": "AWS::Kinesis::Stream",
     "aws_kinesis_stream": "AWS::Kinesis::Stream",
     "aws_kinesis_stream_consumer": "AWS::Kinesis::StreamConsumer",
-
 }
 
 
