@@ -1,4 +1,5 @@
 # from ..config import iamPolicyAttributes, arnServiceMap, awsAccount
+from collections import defaultdict
 import iam_check.config as config
 import enum
 import logging
@@ -81,10 +82,65 @@ class TerraformPlan:
             obj["proposed_unknown"] = json.loads(str(self.proposed_unknown))
         return json.dumps(obj, indent=4)
 
+    def generatePolicyForLambda(self, resource, permissions_policies):
+        action = self.getValue(f"{resource}.action")
+        function_name = self.getValue(f"{resource}.function_name")   
+        principal = self.getValue(f"{resource}.principal") 
+        source_arn = None
+        source_account = None
+        principal_org_id = None
+        try:
+            source_arn = self.getValue(f"{resource}.source_arn")
+        except KeyError:
+            pass
+        try:
+            source_account = self.getValue(f"{resource}.source_account")
+        except KeyError:
+            pass
+        try:
+            principal_org_id = self.getValue(f"{resource}.principal_org_id")
+        except KeyError:
+            pass
+
+        policy_statement = {
+            'Effect': 'Allow',
+            'Action': action
+        }
+        if 'amazonaws' in principal:
+            # this is a permission to a service
+            policy_statement['Principal'] = {'Service': principal}
+        else:
+            # otherwise this is a permission to an account
+            policy_statement['Principal'] = {'AWS': principal}
+
+        # just the function name
+        policy_statement['Resource'] = f'arn::lambda:::function:{function_name}'
+
+        if source_arn is not None:
+            condition = policy_statement.get('Condition', {})
+            condition['ArnLike'] = {'AWS:SourceArn': source_arn}
+            policy_statement['Condition'] = condition
+
+        if source_account is not None:
+            condition = policy_statement.get('Condition', {})
+            condition['StringEquals'] = {'AWS:SourceAccount': source_account}
+            policy_statement['Condition'] = condition
+        
+        if principal_org_id is not None:
+            condition = policy_statement.get('Condition', {})
+            if 'StringEquals' not in condition:
+                condition['StringEquals'] = {}
+            condition['StringEquals']['AWS:PrincipalOrgID'] = principal_org_id
+            policy_statement['Condition'] = condition
+
+        permissions_policies[f"{resource}.policy"].append(policy_statement)
+        return permissions_policies
+
     def findPolicies(self):
         logging.debug("generating a list of policies in plan")
         policies = {}
         resources = self.listResources()
+        permissions_policies = defaultdict(list)
         for r in resources:
             resourceType = r.split(".")[-2]
             if resourceType not in config.iamPolicyAttributes:
@@ -93,6 +149,9 @@ class TerraformPlan:
             attributes = config.iamPolicyAttributes[resourceType]
             if isinstance(attributes, str):
                 attributes = [attributes]
+            if resourceType == "aws_lambda_permission":
+                permissions_policies = self.generatePolicyForLambda(r, permissions_policies)
+                continue
             for attribute in attributes:
                 # check if attribute is a base one or inside a block
                 if "." not in attribute:
@@ -134,6 +193,13 @@ class TerraformPlan:
                                     policies[ref] = policy
                             else:
                                 LOGGER.info(f"No policy found at: {ref}")
+        for key, statements in permissions_policies.items():
+            policy_document = {
+                'Version': '2012-10-17',
+                'Statement': statements
+            }
+            policies[key] = json.dumps(policy_document)
+            
         for ref in policies.keys():
             LOGGER.debug(f"found policy at {ref}")
 

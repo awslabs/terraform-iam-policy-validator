@@ -45,6 +45,14 @@ RESOURCE_TYPE_MAP = {
     "aws_cloudtrail_event_data_store": "AWS::CloudTrail::EventDataStore",
     "aws_s3tables_table": "AWS::S3Tables::Table",
     "aws_s3tables_table_policy": "AWS::S3Tables::Table",
+    "aws_lambda_permission": "AWS::Lambda::Function",
+    "aws_lambda_function": "AWS::Lambda::Function",
+    "aws_dynamodb_resource_policy": "AWS::DynamoDB::Table",
+    "aws_dynamodb_table": "AWS::DynamoDB::Table",
+    "aws_kinesis_resource_policy": "AWS::Kinesis::Stream",
+    "aws_kinesis_stream": "AWS::Kinesis::Stream",
+    "aws_kinesis_stream_consumer": "AWS::Kinesis::StreamConsumer",
+
 }
 
 
