@@ -114,7 +114,7 @@ class TerraformPlan:
         policy_statement["Resource"] = f"arn::lambda:::function:{function_name}"
         # Ref to the supported arguments
         # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission
-        
+
         if source_arn is not None:
             condition = policy_statement.get("Condition", {})
             condition["ArnLike"] = {"AWS:SourceArn": source_arn}
@@ -140,7 +140,7 @@ class TerraformPlan:
         policies = {}
         resources = self.listResources()
         # used to collect all policy statements related to a resource. Currently, only applicable to aws_lambda_permission
-        # where each aws_lambda_permission is mapped to a statement. 
+        # where each aws_lambda_permission is mapped to a statement.
         permissions_policies = defaultdict(list)
         for r in resources:
             resourceType = r.split(".")[-2]
