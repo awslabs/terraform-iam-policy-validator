@@ -53,6 +53,11 @@ arnServiceMap:
   aws_transfer_access: server_id?fakeServerId
   aws_transfer_user: user_name?fakeUserName
   aws_vpc_endpoint: fakeName
+  aws_s3tables_table_bucket_policy: table_bucket_arn?fakeTableBucketARN
+  aws_s3tables_table_policy: table_bucket_arn?fakeTableBucketARN
+  aws_kinesis_resource_policy: resource_arn?fakeResourceArn
+  aws_dynamodb_resource_policy: resource_arn?fakeResourceArn
+  aws_lambda_permission: function_name?fakeFunctionName
 # iamChecks:
 #   - AccessAnalyzer
 
@@ -116,6 +121,12 @@ iamPolicyAttributes:
   aws_transfer_access: policy
   aws_transfer_user: policy
   aws_vpc_endpoint: policy
+  aws_s3tables_table_bucket_policy: resource_policy
+  aws_s3tables_table_policy: resource_policy
+  aws_kinesis_resource_policy: policy
+  aws_dynamodb_resource_policy: policy
+  aws_lambda_permission: policy
+
   
 validatePolicyResourceType:
   aws_s3_bucket: AWS::S3::Bucket
