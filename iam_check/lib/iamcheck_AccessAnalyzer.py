@@ -85,7 +85,21 @@ class Validator:
             policy_resource_type = ref.split(".")[0]
             policy_name = ".".join(ref.split(".")[0:-1])
             resource_name = plan.getResourceName(policy_name)
-            p = iamPolicy.Policy(json=policy)
+            try:
+                p = iamPolicy.Policy(json=policy)
+            except ValueError as e:
+                self.findings.add_validation_finding(
+                    [
+                        {
+                            "findingType": "ERROR",
+                            "findingDetails": str(e),
+                            "issueCode": "INVALID_POLICY",
+                        }
+                    ],
+                    resource_name,
+                    policy_name,
+                )
+                continue
             LOGGER.info(f"start checking policy:{p}")
             policyType = "IDENTITY_POLICY"
             for statement in p.getStatement():

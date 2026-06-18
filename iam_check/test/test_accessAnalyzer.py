@@ -12,9 +12,42 @@ import pytest
 import json
 
 
+class StubPlan:
+    def __init__(self, policies):
+        self._policies = policies
+
+    def findPolicies(self):
+        return self._policies
+
+    def getResourceName(self, ref):
+        return ref.split(".")[1]
+
+
 class TestAccessAnalyzer:
 
     load_config_yaml("config/default.yaml", exclude_resource_type=[])
+
+    def test_a2_invalid_policy_reported_as_finding(self):
+        policy = json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Action": "s3:GetObject",
+                        "NotAction": "s3:PutObject",
+                        "Resource": "*",
+                    }
+                ],
+            }
+        )
+        plan = StubPlan({"aws_iam_role_policy.bad.policy": policy})
+        check = Validator("123456789012", "us-west-2", "aws")
+        check.run(plan)
+        assert len(check.findings.errors) == 1
+        finding = check.findings.errors[0]
+        assert finding.code == "INVALID_POLICY"
+        assert finding.resourceName == "bad"
 
     def test_a2_policy_validation(self):
         file = _load_json_file("test/iam_policy/test_plan.json")
