@@ -6,7 +6,6 @@ import logging
 import json
 import re
 
-
 LOGGER = logging.getLogger("iam-policy-validator-for-terraform")
 
 
@@ -522,7 +521,7 @@ class TerraformResource:
             elif arg == "sensitive_values":
                 self.sensitive_values = value
             else:
-                raise ValueError(f"TerraformResource: Invalid parameter: {arg}")
+                continue
 
     def __eq__(self, o: object) -> bool:
         return vars(self) == vars(o)
