@@ -28,7 +28,7 @@ RESOURCE_TYPE_MAP = {
     "aws_glacier_vault_lock": "AWS::S3::Glacier",
     "aws_s3control_bucket_policy": "AWS::S3Outposts::Bucket",
     "aws_secretsmanager_secret": "AWS::SecretsManager::Secret",
-    "aws_secretsmanager_secret_policy:": "AWS::SecretsManager::Secret",
+    "aws_secretsmanager_secret_policy": "AWS::SecretsManager::Secret",
     "aws_sns_topic": "AWS::SNS::Topic",
     "aws_sns_topic_policy": "AWS::SNS::Topic",
     "aws_sqs_queue": "AWS::SQS::Queue",
