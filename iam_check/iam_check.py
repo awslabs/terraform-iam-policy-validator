@@ -43,7 +43,7 @@ def validate_from_cli(opts):
             data = json.loads(data)
             plan = tfPlan.TerraformPlan(**data)
         except Exception as e:
-            if opts.plan.endswith(".json"):
+            if opts.template_path.endswith(".json"):
                 print(f"Failed to load plan file from: {opts.template_path}")
                 raise e
             plan = tfPlan.plan_from_stdout(data)
