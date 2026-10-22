@@ -495,8 +495,10 @@ class TerraformResource:
         self.change = None
         self.provider_name = None
         self.schema_version = None
+        self.identity_schema_version = None
         self.values = {}
         self.sensitive_values = {}
+        self.identity = {}
 
         for arg, value in kwargs.items():
             if arg == "address":
@@ -521,6 +523,10 @@ class TerraformResource:
                 self.values = value
             elif arg == "sensitive_values":
                 self.sensitive_values = value
+            elif arg == "identity":
+                self.identity = value
+            elif arg == "identity_schema_version":
+                self.identity_schema_version = value
             else:
                 raise ValueError(f"TerraformResource: Invalid parameter: {arg}")
 
