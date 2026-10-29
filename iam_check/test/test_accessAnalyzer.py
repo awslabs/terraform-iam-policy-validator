@@ -1,6 +1,7 @@
 from iam_check.lib import _load_json_file
 from iam_check.lib.reporter import Reporter
 from iam_check.lib.tfPlan import TerraformPlan
+import iam_check.lib.tfPlan as tfPlan
 from iam_check.lib.iamcheck_AccessAnalyzer import (
     Comparator,
     Validator,
@@ -48,6 +49,65 @@ class TestAccessAnalyzer:
         finding = check.findings.errors[0]
         assert finding.code == "INVALID_POLICY"
         assert finding.resourceName == "bad"
+
+    def test_a2_non_object_statement_reported_as_finding(self):
+        policy = json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    [{"Effect": "Allow", "Action": "s3:GetObject", "Resource": "*"}]
+                ],
+            }
+        )
+        plan = StubPlan({"aws_iam_role_policy.bad.policy": policy})
+        check = Validator("123456789012", "us-west-2", "aws")
+        check.run(plan)
+        assert len(check.findings.errors) == 1
+        finding = check.findings.errors[0]
+        assert finding.code == "INVALID_POLICY"
+        assert finding.resourceName == "bad"
+
+    def test_a2_invalid_policy_finding_names_conflicting_elements(self):
+        policy = json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": "*",
+                        "NotPrincipal": {"AWS": "arn:aws:iam::123456789012:root"},
+                        "Action": "s3:GetObject",
+                        "Resource": "*",
+                    }
+                ],
+            }
+        )
+        plan = StubPlan({"aws_s3_bucket_policy.bad.policy": policy})
+        check = Validator("123456789012", "us-west-2", "aws")
+        check.run(plan)
+        assert len(check.findings.errors) == 1
+        assert "Principal with NotPrincipal" in check.findings.errors[0].message
+
+    def test_missing_block_policy_logs_block_ref(self, monkeypatch):
+        logged = []
+        monkeypatch.setattr(tfPlan.LOGGER, "info", logged.append)
+        plan = TerraformPlan(
+            planned_values={
+                "root_module": {
+                    "resources": [
+                        {
+                            "address": "aws_iam_role.r",
+                            "mode": "managed",
+                            "type": "aws_iam_role",
+                            "name": "r",
+                            "values": {"assume_role_policy": ""},
+                        }
+                    ]
+                }
+            }
+        )
+        plan.findPolicies()
+        assert "No policy found at: aws_iam_role.r.inline_policy.policy" in logged
 
     def test_a2_policy_validation(self):
         file = _load_json_file("test/iam_policy/test_plan.json")
