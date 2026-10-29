@@ -133,9 +133,9 @@ class Statement:
         if "Action" in kwargs and "NotAction" in kwargs:
             raise ValueError("Parameter: Can not use Action with NotAction")
         if "Principal" in kwargs and "NotPrincipal" in kwargs:
-            raise ValueError("Parameter: Can not use Action with NotPrincipal")
+            raise ValueError("Parameter: Can not use Principal with NotPrincipal")
         if "Resource" in kwargs and "NotResource" in kwargs:
-            raise ValueError("Parameter: Can not use Action with NotResource")
+            raise ValueError("Parameter: Can not use Resource with NotResource")
 
         for arg, value in kwargs.items():
             if arg == "Sid":

@@ -87,7 +87,7 @@ class Validator:
             resource_name = plan.getResourceName(policy_name)
             try:
                 p = iamPolicy.Policy(json=policy)
-            except ValueError as e:
+            except (ValueError, TypeError) as e:
                 self.findings.add_validation_finding(
                     [
                         {

@@ -173,7 +173,7 @@ class TerraformPlan:
                     try:
                         data = self.getValue(block_ref)
                     except KeyError as e:
-                        LOGGER.info(f"No policy found at: {ref}")
+                        LOGGER.info(f"No policy found at: {block_ref}.{key}")
                         continue
 
                     if not isinstance(data, list):
